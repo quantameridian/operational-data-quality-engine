@@ -15,9 +15,10 @@ The engine is intended to take a realistic sample operational tracker, apply def
 
 If you are reviewing this quickly, start here:
 
-1. Read the business problem and rule table below.
-2. Inspect the generated outputs in `outputs/exception_register.csv`, `outputs/quality_summary.md`, and `docs/exception-register-preview.md`.
-3. Run `make qa` to lint, test, regenerate the sample outputs, and refresh the markdown preview.
+1. Read [docs/reviewer-guide.md](docs/reviewer-guide.md).
+2. Read the business problem and rule table below.
+3. Inspect the generated outputs in `outputs/exception_register.csv`, `outputs/quality_summary.md`, and `docs/exception-register-preview.md`.
+4. Run `make qa` to lint, test, regenerate the sample outputs, and refresh the markdown preview.
 
 The current GitHub Actions workflow runs linting, tests, and the sample engine execution on every push to `main`.
 
@@ -46,6 +47,16 @@ If these issues are not found early, dashboards and management packs can give a 
 - Assurance and control thinking around operational records.
 - Reproducible outputs from synthetic sample data.
 - Testable business logic for rules that matter in reporting.
+
+## Skills demonstrated
+
+| Skill | Where to inspect |
+| --- | --- |
+| Python package structure | `src/quality_engine` modules and CLI entry point |
+| Data-quality rule design | `src/quality_engine/rules.py` and [docs/data-quality-rules.md](docs/data-quality-rules.md) |
+| Test-driven business logic | `tests/` coverage for schema, rules, scoring, reporting, and CLI behavior |
+| Reporting output design | `outputs/exception_register.csv`, `outputs/quality_summary.md`, and [docs/exception-register-preview.md](docs/exception-register-preview.md) |
+| Security-aware public repo practice | [docs/security-posture.md](docs/security-posture.md), CI, CodeQL, Scorecard, and dependency audit |
 
 ## Architecture
 
