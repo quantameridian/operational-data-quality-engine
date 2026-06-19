@@ -1,0 +1,30 @@
+rule_id,rule_name,severity,record_id,field,issue,recommended_action
+DQ001,Missing owner,High,OP-1003,"owner_name,owner_email",Record is missing owner details needed for follow-up.,Add owner name and owner email before reporting.
+DQ001,Missing owner,High,OP-1014,owner_name,Record is missing owner details needed for follow-up.,Add owner name and owner email before reporting.
+DQ002,Invalid status,High,OP-1005,status,Status 'pending' is not an approved value.,Update the status to an approved value.
+DQ002,Invalid status,High,OP-1012,status,Status 'complete' is not an approved value.,Update the status to an approved value.
+DQ002,Invalid status,High,OP-1024,status,Status 'awaiting_update' is not an approved value.,Update the status to an approved value.
+DQ004,Duplicate record ID,High,OP-1007,record_id,Record identifier appears more than once.,Review duplicate rows and retain one authoritative record.
+DQ004,Duplicate record ID,High,OP-1007,record_id,Record identifier appears more than once.,Review duplicate rows and retain one authoritative record.
+DQ005,Overdue review,Medium,OP-1003,next_review_due,Record review date has passed while the record is unresolved.,Complete the review and update the next review due date.
+DQ005,Overdue review,Medium,OP-1005,next_review_due,Record review date has passed while the record is unresolved.,Complete the review and update the next review due date.
+DQ005,Overdue review,Medium,OP-1007,next_review_due,Record review date has passed while the record is unresolved.,Complete the review and update the next review due date.
+DQ005,Overdue review,Medium,OP-1007,next_review_due,Record review date has passed while the record is unresolved.,Complete the review and update the next review due date.
+DQ005,Overdue review,Medium,OP-1008,next_review_due,Record review date has passed while the record is unresolved.,Complete the review and update the next review due date.
+DQ005,Overdue review,Medium,OP-1013,next_review_due,Record review date has passed while the record is unresolved.,Complete the review and update the next review due date.
+DQ005,Overdue review,Medium,OP-1019,next_review_due,Record review date has passed while the record is unresolved.,Complete the review and update the next review due date.
+DQ005,Overdue review,Medium,OP-1021,next_review_due,Record review date has passed while the record is unresolved.,Complete the review and update the next review due date.
+DQ005,Overdue review,Medium,OP-1024,next_review_due,Record review date has passed while the record is unresolved.,Complete the review and update the next review due date.
+DQ005,Overdue review,Medium,OP-1025,next_review_due,Record review date has passed while the record is unresolved.,Complete the review and update the next review due date.
+DQ006,Stale record,Medium,OP-1008,last_reviewed_date,Unresolved record has not been reviewed within two expected cycles.,Review the record and confirm whether it remains current.
+DQ006,Stale record,Medium,OP-1019,last_reviewed_date,Unresolved record has not been reviewed within two expected cycles.,Review the record and confirm whether it remains current.
+DQ006,Stale record,Medium,OP-1024,last_reviewed_date,Unresolved record has not been reviewed within two expected cycles.,Review the record and confirm whether it remains current.
+DQ006,Stale record,Medium,OP-1025,last_reviewed_date,Unresolved record has not been reviewed within two expected cycles.,Review the record and confirm whether it remains current.
+DQ007,Invalid review cycle,Medium,OP-1021,"last_reviewed_date,next_review_due",Next review due date is not after the last reviewed date.,Correct review dates so the next review falls after the last review.
+DQ009,Closed item missing closure evidence,High,OP-1009,closure_evidence,Completed record does not include closure evidence.,Add closure evidence or reopen the record.
+DQ009,Closed item missing closure evidence,High,OP-1028,closure_evidence,Completed record does not include closure evidence.,Add closure evidence or reopen the record.
+DQ010,Overdue action,High,OP-1007,action_due_date,Action due date has passed while the record is unresolved.,"Confirm status, agree recovery action, or escalate the overdue item."
+DQ010,Overdue action,High,OP-1007,action_due_date,Action due date has passed while the record is unresolved.,"Confirm status, agree recovery action, or escalate the overdue item."
+DQ010,Overdue action,High,OP-1016,action_due_date,Action due date has passed while the record is unresolved.,"Confirm status, agree recovery action, or escalate the overdue item."
+DQ010,Overdue action,High,OP-1022,action_due_date,Action due date has passed while the record is unresolved.,"Confirm status, agree recovery action, or escalate the overdue item."
+DQ010,Overdue action,High,OP-1024,action_due_date,Action due date has passed while the record is unresolved.,"Confirm status, agree recovery action, or escalate the overdue item."
