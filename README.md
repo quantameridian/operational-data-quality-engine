@@ -1,6 +1,8 @@
 # Operational Data Quality Engine
 
 [![CI](https://github.com/quantameridian/operational-data-quality-engine/actions/workflows/ci.yml/badge.svg)](https://github.com/quantameridian/operational-data-quality-engine/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/quantameridian/operational-data-quality-engine/actions/workflows/codeql.yml/badge.svg)](https://github.com/quantameridian/operational-data-quality-engine/actions/workflows/codeql.yml)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/quantameridian/operational-data-quality-engine/badge)](https://scorecard.dev/viewer/?uri=github.com/quantameridian/operational-data-quality-engine)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 ## Project purpose
@@ -121,6 +123,7 @@ The implemented rules cover core ownership, status, duplicate, evidence, review-
 ## How to run locally
 
 A reviewer can install the project, run checks, and regenerate outputs with `make`.
+Use Python 3.11 or newer; the CI security checks run on Python 3.11.
 
 ```bash
 make install
@@ -184,9 +187,12 @@ Current checks:
 
 - `make test`: runs pytest coverage for schema validation, rules, reporting, scoring, and CLI output generation.
 - `make lint`: runs Ruff against the repository.
+- `make audit`: runs a Python dependency vulnerability audit.
 - `make run`: regenerates the exception register and quality summary from the synthetic sample data.
 - `make preview`: regenerates the reviewer-facing markdown exception preview from the CSV output.
 - `make qa`: runs linting, tests, sample output generation, and preview generation in one command.
+
+Security posture and public-data boundaries are documented in [docs/security-posture.md](docs/security-posture.md).
 
 ## How this applies commercially
 

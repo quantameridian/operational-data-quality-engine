@@ -1,9 +1,9 @@
-.PHONY: install test lint run preview qa clean
+.PHONY: install test lint audit run preview qa clean
 
 PYTHON ?= python3
 
 install:
-	$(PYTHON) -m pip install --upgrade pip setuptools wheel
+	$(PYTHON) -m pip install --upgrade 'pip>=26.1.2' setuptools wheel
 	$(PYTHON) -m pip install -e '.[dev]'
 
 test:
@@ -12,6 +12,9 @@ test:
 lint:
 	$(PYTHON) -m ruff check .
 	$(PYTHON) -m ruff format --check .
+
+audit:
+	$(PYTHON) -m pip_audit --skip-editable
 
 run:
 	$(PYTHON) -m quality_engine.cli \

@@ -7,7 +7,7 @@ name = "operational-data-quality-engine"
 version = "0.1.0"
 description = "A portfolio data quality engine for operational reporting tracker checks."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 license = "MIT"
 authors = [{ name = "Michael" }]
 dependencies = []
@@ -17,8 +17,13 @@ quality-engine = "quality_engine.cli:main"
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=8.0",
+    "filelock>=3.20.3",
+    "msgpack>=1.2.1",
+    "pip-audit>=2.9,<3",
+    "pytest>=9.0.3",
+    "requests>=2.33.0",
     "ruff>=0.6.0",
+    "urllib3>=2.7.0",
 ]
 
 [tool.setuptools.packages.find]
@@ -30,7 +35,7 @@ pythonpath = ["src"]
 
 [tool.ruff]
 line-length = 100
-target-version = "py39"
+target-version = "py311"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
