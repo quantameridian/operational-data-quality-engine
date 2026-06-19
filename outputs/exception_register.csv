@@ -1,6 +1,8 @@
 rule_id,rule_name,severity,record_id,field,issue,recommended_action
-DQ001,Missing owner,High,OP-1003,"owner_name,owner_email",Record is missing owner details needed for follow-up.,Add owner name and owner email before reporting.
-DQ001,Missing owner,High,OP-1014,owner_name,Record is missing owner details needed for follow-up.,Add owner name and owner email before reporting.
+DQ001,Missing owner details,High,OP-1003,"owner_name,owner_email",Record is missing owner details needed for follow-up.,Add owner name and owner email before reporting.
+DQ001,Missing owner details,High,OP-1014,owner_name,Record is missing owner details needed for follow-up.,Add owner name and owner email before reporting.
+DQ003,Missing action owner,High,OP-1006,action_owner,Unresolved record does not have an action owner.,Assign an action owner before the record is used in reporting.
+DQ003,Missing action owner,High,OP-1011,action_owner,Unresolved record does not have an action owner.,Assign an action owner before the record is used in reporting.
 DQ002,Invalid status,High,OP-1005,status,Status 'pending' is not an approved value.,Update the status to an approved value.
 DQ002,Invalid status,High,OP-1012,status,Status 'complete' is not an approved value.,Update the status to an approved value.
 DQ002,Invalid status,High,OP-1024,status,Status 'awaiting_update' is not an approved value.,Update the status to an approved value.

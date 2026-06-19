@@ -72,12 +72,34 @@ def find_missing_owner(records: Iterable[Record]) -> list[ValidationIssue]:
             issues.append(
                 ValidationIssue(
                     rule_id="DQ001",
-                    rule_name="Missing owner",
+                    rule_name="Missing owner details",
                     severity="High",
                     record_id=record.get("record_id", ""),
                     field=",".join(missing_fields),
                     message="Record is missing owner details needed for follow-up.",
                     recommended_action="Add owner name and owner email before reporting.",
+                )
+            )
+    return issues
+
+
+def find_missing_action_owner(records: Iterable[Record]) -> list[ValidationIssue]:
+    """Flag unresolved records without an accountable action owner."""
+
+    issues: list[ValidationIssue] = []
+    for record in records:
+        if _is_unresolved(record) and _is_blank(record.get("action_owner")):
+            issues.append(
+                ValidationIssue(
+                    rule_id="DQ003",
+                    rule_name="Missing action owner",
+                    severity="High",
+                    record_id=record.get("record_id", ""),
+                    field="action_owner",
+                    message="Unresolved record does not have an action owner.",
+                    recommended_action=(
+                        "Assign an action owner before the record is used in reporting."
+                    ),
                 )
             )
     return issues
@@ -272,6 +294,7 @@ def run_core_rules(
     materialised = list(records)
     return [
         *find_missing_owner(materialised),
+        *find_missing_action_owner(materialised),
         *find_invalid_status(materialised),
         *find_duplicate_record_ids(materialised),
         *find_overdue_reviews(materialised, report_date),

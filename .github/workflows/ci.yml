@@ -19,4 +19,5 @@ jobs:
         run: make lint PYTHON=python
       - name: Run tests
         run: make test PYTHON=python
-
+      - name: Run sample engine
+        run: make run PYTHON=python

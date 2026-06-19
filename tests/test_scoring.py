@@ -20,8 +20,8 @@ def test_calculate_quality_summary_uses_records_exceptions_and_readiness_indicat
     summary = calculate_quality_summary(records, issues, REPORT_DATE)
 
     assert summary.record_count == 30
-    assert summary.exception_count == 29
-    assert summary.severity_counts == {"High": 14, "Medium": 15}
+    assert summary.exception_count == 31
+    assert summary.severity_counts == {"High": 16, "Medium": 15}
     assert summary.high_risk_unresolved_exception_count == 7
     assert summary.missing_evidence_count == 8
     assert summary.overdue_review_count == 10
@@ -38,7 +38,7 @@ def test_quality_summary_markdown_explains_score_inputs() -> None:
 
     assert "Score: 12/100" in markdown
     assert "Records checked: 30" in markdown
-    assert "Validation exceptions: 29" in markdown
+    assert "Validation exceptions: 31" in markdown
     assert "It does not prove" in markdown
 
 

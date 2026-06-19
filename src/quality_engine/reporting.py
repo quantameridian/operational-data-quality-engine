@@ -50,7 +50,11 @@ def write_exception_register(
     rows = build_exception_register(issues)
 
     with path.open("w", newline="", encoding="utf-8") as csv_file:
-        writer = csv.DictWriter(csv_file, fieldnames=EXCEPTION_REGISTER_FIELDS)
+        writer = csv.DictWriter(
+            csv_file,
+            fieldnames=EXCEPTION_REGISTER_FIELDS,
+            lineterminator="\n",
+        )
         writer.writeheader()
         writer.writerows(rows)
 

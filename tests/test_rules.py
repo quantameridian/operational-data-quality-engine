@@ -5,6 +5,7 @@ from quality_engine.rules import (
     find_duplicate_record_ids,
     find_invalid_review_cycles,
     find_invalid_status,
+    find_missing_action_owner,
     find_missing_completion_evidence,
     find_missing_owner,
     find_overdue_actions,
@@ -23,6 +24,16 @@ def test_missing_owner_rule_flags_rows_with_missing_owner_details() -> None:
 
     assert {issue.record_id for issue in issues} == {"OP-1003", "OP-1014"}
     assert all(issue.rule_id == "DQ001" for issue in issues)
+
+
+def test_missing_action_owner_rule_flags_unresolved_records_without_action_owner() -> None:
+    records = load_operational_tracker(SAMPLE_FILE)
+
+    issues = find_missing_action_owner(records)
+
+    assert [issue.record_id for issue in issues] == ["OP-1006", "OP-1011"]
+    assert all(issue.rule_id == "DQ003" for issue in issues)
+    assert all(issue.field == "action_owner" for issue in issues)
 
 
 def test_invalid_status_rule_flags_unapproved_status_values() -> None:
@@ -113,10 +124,11 @@ def test_core_rules_return_structured_issues() -> None:
 
     issues = run_core_rules(records)
 
-    assert len(issues) == 29
+    assert len(issues) == 31
     assert {issue.rule_id for issue in issues} == {
         "DQ001",
         "DQ002",
+        "DQ003",
         "DQ004",
         "DQ005",
         "DQ006",

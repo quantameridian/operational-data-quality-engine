@@ -1,4 +1,4 @@
-.PHONY: install test lint run clean
+.PHONY: install test lint run preview qa clean
 
 PYTHON ?= python3
 
@@ -19,5 +19,12 @@ run:
 		--output-dir outputs \
 		--report-date 2026-06-19
 
+preview:
+	$(PYTHON) scripts/export_exception_preview.py \
+		--input outputs/exception_register.csv \
+		--output docs/exception-register-preview.md
+
+qa: lint test run preview
+
 clean:
-	rm -f outputs/exception_register.csv outputs/quality_summary.md
+	rm -f outputs/exception_register.csv outputs/quality_summary.md docs/exception-register-preview.md

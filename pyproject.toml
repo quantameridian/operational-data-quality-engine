@@ -8,6 +8,7 @@ version = "0.1.0"
 description = "A portfolio data quality engine for operational reporting tracker checks."
 readme = "README.md"
 requires-python = ">=3.9"
+license = "MIT"
 authors = [{ name = "Michael" }]
 dependencies = []
 

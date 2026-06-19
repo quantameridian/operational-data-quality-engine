@@ -11,7 +11,7 @@ Band: Not ready for reporting
 ## Inputs
 
 - Records checked: 30
-- Validation exceptions: 29
+- Validation exceptions: 31
 - High-risk unresolved records with current exceptions or missing action owner:
   7
 - Records with missing evidence indicators: 8
@@ -19,7 +19,7 @@ Band: Not ready for reporting
 
 ## Severity Mix
 
-- High: 14
+- High: 16
 - Medium: 15
 
 ## Penalties Applied

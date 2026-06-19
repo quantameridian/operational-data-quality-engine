@@ -1,10 +1,23 @@
 # Operational Data Quality Engine
 
+[![CI](https://github.com/quantameridian/operational-data-quality-engine/actions/workflows/ci.yml/badge.svg)](https://github.com/quantameridian/operational-data-quality-engine/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
 ## Project purpose
 
 This repository builds a Python-based data quality engine for checking operational tracker data before it is used in management reporting, assurance review, or performance discussion.
 
 The engine is intended to take a realistic sample operational tracker, apply defined quality rules, and produce clear exceptions that show which records need attention before the data can be trusted for reporting.
+
+## Reviewer quick path
+
+If you are reviewing this quickly, start here:
+
+1. Read the business problem and rule table below.
+2. Inspect the generated outputs in `outputs/exception_register.csv`, `outputs/quality_summary.md`, and `docs/exception-register-preview.md`.
+3. Run `make qa` to lint, test, regenerate the sample outputs, and refresh the markdown preview.
+
+The current GitHub Actions workflow runs linting, tests, and the sample engine execution on every push to `main`.
 
 ## Business problem
 
@@ -95,8 +108,9 @@ The implemented rules cover core ownership, status, duplicate, evidence, review-
 
 | Rule ID | Rule name | Severity | Summary |
 | --- | --- | --- | --- |
-| DQ001 | Missing owner | High | Open or active records must have an action owner |
+| DQ001 | Missing owner details | High | Records should have owner name and owner email for follow-up |
 | DQ002 | Invalid status | High | Status must match the approved status list |
+| DQ003 | Missing action owner | High | Unresolved records should have an accountable action owner |
 | DQ004 | Duplicate record | High | `record_id` should be unique |
 | DQ005 | Overdue review | Medium | Unresolved records should be reviewed before the review due date passes |
 | DQ006 | Stale record | Medium | Unresolved records should not go more than two expected cycles without review |
@@ -110,9 +124,7 @@ A reviewer can install the project, run checks, and regenerate outputs with `mak
 
 ```bash
 make install
-make test
-make lint
-make run
+make qa
 ```
 
 `make run` reads:
@@ -123,6 +135,7 @@ and writes:
 
 - `outputs/exception_register.csv`
 - `outputs/quality_summary.md`
+- `docs/exception-register-preview.md`
 
 The same output generation can be run directly with the CLI:
 
@@ -145,6 +158,7 @@ Current generated output:
 
 - `outputs/exception_register.csv`: one row per failed rule, including record ID, rule ID, severity, issue description, and recommended action.
 - `outputs/quality_summary.md`: a markdown summary with a simple reporting-readiness score and the inputs used to calculate it.
+- `docs/exception-register-preview.md`: a generated high-severity-first markdown preview for fast GitHub review.
 
 Potential later output:
 
@@ -170,6 +184,9 @@ Current checks:
 
 - `make test`: runs pytest coverage for schema validation, rules, reporting, scoring, and CLI output generation.
 - `make lint`: runs Ruff against the repository.
+- `make run`: regenerates the exception register and quality summary from the synthetic sample data.
+- `make preview`: regenerates the reviewer-facing markdown exception preview from the CSV output.
+- `make qa`: runs linting, tests, sample output generation, and preview generation in one command.
 
 ## How this applies commercially
 
@@ -194,7 +211,7 @@ The pattern is relevant to:
 
 ## Next implementation layers
 
-1. Add explicit row-level rules for missing review evidence and high-risk unresolved records without action owner if useful.
+1. Add explicit row-level rules for missing review evidence if useful.
 2. Consider adding an HTML summary output if useful for reviewer presentation.
-3. Add a small markdown preview of the exception register for quick GitHub review.
-4. Run GitHub Actions after the repository is pushed.
+3. Add coverage reporting if the project expands beyond the current small rule engine.
+4. Add a lightweight release checklist once the repo has more than one public version.
