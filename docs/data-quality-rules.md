@@ -29,12 +29,12 @@ Each implemented rule should return enough information to populate an exception 
 | --- | --- | --- | --- | --- | --- |
 | DQ001 | Missing owner | Implemented | High | A record does not have enough owner detail to support follow-up. | Add owner name and owner email before reporting. |
 | DQ002 | Invalid status | Implemented | High | The status value does not match the approved status list, which weakens reporting consistency. | Correct the status to an approved value. |
-| DQ003 | Missing evidence | Planned | Medium | A record that should have supporting review evidence does not include an evidence reference. | Add an evidence reference or confirm why evidence is not required. |
+| DQ003 | Missing action owner | Implemented | High | An unresolved record has no accountable action owner for follow-up. | Assign an action owner before reporting. |
 | DQ004 | Duplicate record | Implemented | High | The same `record_id` appears more than once, creating risk of double counting or conflicting updates. | Review duplicate rows and retain a single authoritative record. |
 | DQ005 | Overdue review | Implemented | Medium | The `next_review_due` date has passed and the record is unresolved. | Complete the review and update the next review due date. |
 | DQ006 | Stale record | Implemented | Medium | An unresolved record has gone more than two expected review cycles without review. | Review the record and confirm whether it remains current. |
 | DQ007 | Invalid review cycle | Implemented | Medium | The next review due date is earlier than or equal to the last reviewed date. | Correct review dates so the next review falls after the last review. |
-| DQ008 | High-risk issue without action owner | Planned | Critical | A high or critical risk record is unresolved and has no clear action owner. | Assign an accountable owner and confirm the next action before reporting. |
+| DQ008 | Missing evidence | Planned | Medium | A record that should have supporting review evidence does not include an evidence reference. | Add an evidence reference or confirm why evidence is not required. |
 | DQ009 | Closed item missing closure evidence | Implemented | High | A closed record does not have closure evidence. | Add closure evidence or reopen the record. |
 | DQ010 | Overdue action | Implemented | High | A record has passed its action due date and is unresolved. | Confirm current status, agree recovery action, or escalate the overdue item. |
 | DQ011 | Invalid risk rating | Planned | Medium | The risk rating does not match the approved list. | Correct the risk rating to an approved value. |
@@ -47,7 +47,10 @@ The implementation uses reference values for:
 - status;
 - review cycle.
 
-Future rules may add reference values for risk rating, record type, owning team, and escalation flags.
+The implemented contract is captured in
+[`contracts/operational-tracker-contract.json`](../contracts/operational-tracker-contract.json).
+Future rules may add reference values for risk rating, record type, owning team,
+and escalation flags.
 
 ## Testing expectations
 

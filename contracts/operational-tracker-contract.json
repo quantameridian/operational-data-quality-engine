@@ -1,0 +1,107 @@
+{
+  "contract_name": "operational_tracker_reporting_readiness_contract",
+  "contract_version": "1.0.0",
+  "status": "portfolio_synthetic_contract",
+  "owner_role": "Reporting assurance owner",
+  "source_path": "data/raw/operational_tracker_sample.csv",
+  "generated_outputs": [
+    "outputs/exception_register.csv",
+    "outputs/quality_summary.md",
+    "docs/exception-register-preview.md"
+  ],
+  "required_fields": [
+    "record_id",
+    "service_area",
+    "reporting_unit",
+    "owner_name",
+    "owner_email",
+    "review_cycle",
+    "status",
+    "risk_rating",
+    "evidence_link",
+    "last_reviewed_date",
+    "next_review_due",
+    "action_owner",
+    "action_due_date",
+    "issue_category",
+    "closure_evidence",
+    "notes"
+  ],
+  "approved_values": {
+    "status": ["open", "in_review", "blocked", "closed", "cancelled"],
+    "review_cycle": ["weekly", "fortnightly", "monthly", "quarterly"]
+  },
+  "implemented_rules": [
+    {
+      "rule_id": "DQ001",
+      "rule_name": "Missing owner details",
+      "severity": "High",
+      "blocks_uncaveated_reporting": true
+    },
+    {
+      "rule_id": "DQ002",
+      "rule_name": "Invalid status",
+      "severity": "High",
+      "blocks_uncaveated_reporting": true
+    },
+    {
+      "rule_id": "DQ003",
+      "rule_name": "Missing action owner",
+      "severity": "High",
+      "blocks_uncaveated_reporting": true
+    },
+    {
+      "rule_id": "DQ004",
+      "rule_name": "Duplicate record ID",
+      "severity": "High",
+      "blocks_uncaveated_reporting": true
+    },
+    {
+      "rule_id": "DQ005",
+      "rule_name": "Overdue review",
+      "severity": "Medium",
+      "blocks_uncaveated_reporting": false
+    },
+    {
+      "rule_id": "DQ006",
+      "rule_name": "Stale record",
+      "severity": "Medium",
+      "blocks_uncaveated_reporting": false
+    },
+    {
+      "rule_id": "DQ007",
+      "rule_name": "Invalid review cycle",
+      "severity": "Medium",
+      "blocks_uncaveated_reporting": false
+    },
+    {
+      "rule_id": "DQ009",
+      "rule_name": "Closed item missing closure evidence",
+      "severity": "High",
+      "blocks_uncaveated_reporting": true
+    },
+    {
+      "rule_id": "DQ010",
+      "rule_name": "Overdue action",
+      "severity": "High",
+      "blocks_uncaveated_reporting": true
+    }
+  ],
+  "readiness_thresholds": {
+    "ready": "Score >= 90 and no high-severity exceptions affecting headline reporting",
+    "ready_with_caveats": "Score >= 75 and high-severity exceptions are owned with visible caveats",
+    "review_required": "Score >= 60 or repeated high-severity exceptions require assurance review",
+    "not_ready": "Score < 60 or schema validation fails"
+  },
+  "public_data_boundary": {
+    "synthetic_only": true,
+    "must_not_contain": [
+      "client data",
+      "employer data",
+      "private operational tracker exports",
+      "credentials",
+      "internal URLs",
+      "personal contact details outside example.com sample values"
+    ]
+  }
+}
