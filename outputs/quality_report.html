@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Operational data quality report</title>
+  <style>
+    :root { color-scheme: light; font-family: Arial, sans-serif; color: #17212b; }
+    body { margin: 0; background: #f4f6f7; }
+    main { max-width: 1080px; margin: 0 auto; padding: 32px 20px 48px; }
+    header { border-top: 6px solid #006c67; background: white; padding: 24px; }
+    h1, h2 { margin: 0 0 12px; }
+    .meta { color: #52606d; }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin: 20px 0;
+    }
+    .metric { background: white; border-left: 4px solid #006c67; padding: 16px; }
+    .metric strong { display: block; font-size: 1.6rem; }
+    section { margin-top: 24px; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; background: white; }
+    th, td { padding: 10px; border: 1px solid #d8dee3; text-align: left; vertical-align: top; }
+    th { background: #e8efee; }
+    @media (max-width: 700px) {
+      .metrics { grid-template-columns: 1fr; }
+      table { font-size: .85rem; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Operational data quality report</h1>
+    <p class="meta">Run sample-2026-06-19 | Report date 2026-06-19</p>
+    <p>Not ready for reporting</p>
+  </header>
+  <div class="metrics">
+    <div class="metric"><strong>12/100</strong>Readiness score</div>
+    <div class="metric"><strong>30</strong>Records checked</div>
+    <div class="metric"><strong>39</strong>Exceptions found</div>
+  </div>
+  <section>
+    <h2>Severity profile</h2>
+    <table><thead><tr><th>Severity</th><th>Count</th></tr></thead><tbody><tr><td>High</td><td>16</td></tr><tr><td>Medium</td><td>23</td></tr></tbody></table>
+  </section>
+  <section>
+    <h2>Priority exceptions</h2>
+    <table>
+      <thead><tr><th>Severity</th><th>Record</th><th>Rule</th><th>Issue</th><th>Action</th></tr></thead>
+      <tbody><tr><td>High</td><td>OP-1003</td><td>DQ001</td><td>Record is missing owner details needed for follow up.</td><td>Add owner name and owner email before reporting.</td></tr><tr><td>High</td><td>OP-1005</td><td>DQ002</td><td>Status &#x27;pending&#x27; is not an approved value.</td><td>Update the status to an approved value.</td></tr><tr><td>High</td><td>OP-1006</td><td>DQ003</td><td>Unresolved record does not have an action owner.</td><td>Assign an action owner before the record is used in reporting.</td></tr><tr><td>High</td><td>OP-1007</td><td>DQ004</td><td>Record identifier appears more than once.</td><td>Review duplicate rows and retain one authoritative record.</td></tr><tr><td>High</td><td>OP-1007</td><td>DQ004</td><td>Record identifier appears more than once.</td><td>Review duplicate rows and retain one authoritative record.</td></tr><tr><td>High</td><td>OP-1007</td><td>DQ010</td><td>Action due date has passed while the record is unresolved.</td><td>Confirm status, agree recovery action, or escalate the overdue item.</td></tr><tr><td>High</td><td>OP-1007</td><td>DQ010</td><td>Action due date has passed while the record is unresolved.</td><td>Confirm status, agree recovery action, or escalate the overdue item.</td></tr><tr><td>High</td><td>OP-1009</td><td>DQ009</td><td>Completed record does not include closure evidence.</td><td>Add closure evidence or reopen the record.</td></tr><tr><td>High</td><td>OP-1011</td><td>DQ003</td><td>Unresolved record does not have an action owner.</td><td>Assign an action owner before the record is used in reporting.</td></tr><tr><td>High</td><td>OP-1012</td><td>DQ002</td><td>Status &#x27;complete&#x27; is not an approved value.</td><td>Update the status to an approved value.</td></tr><tr><td>High</td><td>OP-1014</td><td>DQ001</td><td>Record is missing owner details needed for follow up.</td><td>Add owner name and owner email before reporting.</td></tr><tr><td>High</td><td>OP-1016</td><td>DQ010</td><td>Action due date has passed while the record is unresolved.</td><td>Confirm status, agree recovery action, or escalate the overdue item.</td></tr></tbody>
+    </table>
+  </section>
+</main>
+</body>
+</html>

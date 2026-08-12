@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from datetime import date, datetime
 from pathlib import Path
 
+from quality_engine.config import ReadinessThresholds
 from quality_engine.ingest import Record
 from quality_engine.rules import ValidationIssue
 
@@ -106,12 +107,18 @@ def _high_risk_unresolved_exception_count(
     return count
 
 
-def _readiness_band(score: int) -> str:
-    if score >= 85:
+def _readiness_band(
+    score: int,
+    severity_counts: dict[str, int],
+    thresholds: ReadinessThresholds,
+) -> str:
+    has_high_severity = bool(severity_counts.get("Critical", 0) or severity_counts.get("High", 0))
+    ready_is_blocked = thresholds.block_ready_on_high_severity and has_high_severity
+    if score >= thresholds.ready_score and not ready_is_blocked:
         return "Ready for routine reporting"
-    if score >= 70:
+    if score >= thresholds.review_score:
         return "Usable with review"
-    if score >= 50:
+    if score >= thresholds.correction_score:
         return "Needs correction before reporting"
     return "Not ready for reporting"
 
@@ -120,6 +127,7 @@ def calculate_quality_summary(
     records: list[Record],
     issues: list[ValidationIssue],
     report_date: date,
+    thresholds: ReadinessThresholds | None = None,
 ) -> QualitySummary:
     """Calculate a simple, explainable quality score from records and issues."""
 
@@ -155,6 +163,8 @@ def calculate_quality_summary(
         - overdue_review_penalty,
     )
 
+    active_thresholds = thresholds or ReadinessThresholds()
+
     return QualitySummary(
         record_count=record_count,
         exception_count=exception_count,
@@ -168,7 +178,7 @@ def calculate_quality_summary(
         missing_evidence_penalty=missing_evidence_penalty,
         overdue_review_penalty=overdue_review_penalty,
         score=score,
-        readiness_band=_readiness_band(score),
+        readiness_band=_readiness_band(score, severity_counts, active_thresholds),
     )
 
 
@@ -195,7 +205,7 @@ Band: {summary.readiness_band}
 
 - Records checked: {summary.record_count}
 - Validation exceptions: {summary.exception_count}
-- High-risk unresolved records with current exceptions or missing action owner:
+- High risk unresolved records with current exceptions or missing action owner:
   {summary.high_risk_unresolved_exception_count}
 - Records with missing evidence indicators: {summary.missing_evidence_count}
 - Records with overdue review date: {summary.overdue_review_count}
@@ -210,13 +220,13 @@ Band: {summary.readiness_band}
 | --- | ---: |
 | Exception rate | {summary.exception_rate_penalty} |
 | Severity mix | {summary.severity_penalty} |
-| High-risk unresolved exposure | {summary.high_risk_penalty} |
+| High risk unresolved exposure | {summary.high_risk_penalty} |
 | Missing evidence indicators | {summary.missing_evidence_penalty} |
 | Overdue review indicators | {summary.overdue_review_penalty} |
 
 ## Interpretation
 
-The score is a practical reporting-readiness indicator. It helps identify whether the
+The score is a practical reporting readiness indicator. It helps identify whether the
 sample tracker is clean enough to use in a management pack or dashboard refresh.
 
 It does not prove that the underlying operational facts are correct, complete, or

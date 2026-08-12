@@ -1,66 +1,50 @@
 # Reviewer Guide
 
-This guide is written for someone reviewing the repository from the outside: a hiring reviewer, technical interviewer, engineering lead, or portfolio reviewer. The aim is to make the evidence easy to inspect without implying this is a live production system.
+## Ten minute review
 
-## What To Review First
+1. Open the [HTML report](../outputs/quality_report.html) and decide whether the result is clear without reading code.
+2. Inspect the [run manifest](../outputs/run_manifest.json) for input, policy, engine, and output lineage.
+3. Compare [the rule policy](../config/default-rules.yml) with [`run_core_rules`](../src/quality_engine/rules.py).
+4. Read the [contract tests](../tests/test_contract.py) and [scenario tests](../tests/test_scenarios.py).
+5. Inspect the CSV and DuckDB paths in [ingest.py](../src/quality_engine/ingest.py) and [storage.py](../src/quality_engine/storage.py).
+6. Read [engineering decisions](engineering-decisions.md) for the choices and limitations behind the design.
 
-1. [README.md](../README.md) for the business problem, architecture, and rule table.
-2. [outputs/quality_summary.md](../outputs/quality_summary.md) for the generated readiness summary.
-3. [docs/exception-register-preview.md](exception-register-preview.md) for a fast markdown preview of exceptions.
-4. [contracts/operational-tracker-contract.json](../contracts/operational-tracker-contract.json) for the schema, output, rule, and readiness contract.
-5. [docs/operational-runbook.md](operational-runbook.md) for how a reporting team would respond to the results.
-6. [docs/commercial-review-scorecard.md](commercial-review-scorecard.md) for the plain assessment of the repo.
-7. [outputs/exception_register.csv](../outputs/exception_register.csv) for the full generated exception register.
-8. [tests](../tests) for rule, scoring, reporting, schema, contract, and CLI test coverage.
+## Questions this repository answers
 
-## What This Repository Proves
+**Can a business rule be challenged?**
 
-| Skill | Evidence |
-| --- | --- |
-| Python package design | `src/quality_engine` separates ingest, schema, rules, scoring, reporting, and CLI concerns |
-| Data quality rule design | Rules written in business language produce record level issues with severity and actions |
-| Data contract discipline | The JSON contract is tested against the Python schema and generated output expectations |
-| Testable analytics logic | Pytest coverage checks rule behavior, scoring math, output writing, and CLI execution |
-| Reporting cycle operation | The runbook explains readiness states, escalation triggers, and correction ownership |
-| Reporting readiness | The engine produces a quality summary and exception register from synthetic tracker data |
-| Public repo hygiene | CI, Ruff, pytest, `pip-audit`, CodeQL, OpenSSF Scorecard, and security posture docs are present |
+Yes. The rule name, severity, switch, threshold, failed field, message, and action are visible. A severity change does not require a code change.
 
-## Portfolio Reading
+**Can a run be reproduced?**
 
-The strongest evidence is the route from rule design to runnable output. Start with `docs/data-quality-rules.md`, then compare it with `src/quality_engine/rules.py`, the tests, and the generated files in `outputs/`. That path is what a reviewer should judge. The repo is not trying to look larger than it is.
+Yes, when the same source file, report date, configuration, and engine version are available. The manifest records hashes for each input and generated text output.
 
-## Fast Local Review
+**Can it join a data workflow?**
 
-Use Python 3.11 or newer.
+Yes at a local batch boundary. The CLI emits JSON events, returns distinct failure and quality gate codes, reads CSV or DuckDB, writes DuckDB review tables, and runs in CI.
+
+**Does the sample prove production scale?**
+
+No. The benchmark measures the in memory rule path at 100,000 rows. It does not include remote I/O, concurrency, recovery, or service operation.
+
+## Local verification
 
 ```bash
 make install
-make audit
 make qa
+make audit
+make benchmark
 ```
 
-Expected result:
+Expected checks:
 
-- dependency audit reports no known vulnerabilities;
-- Ruff passes;
-- pytest passes;
-- `outputs/exception_register.csv`, `outputs/quality_summary.md`, and `docs/exception-register-preview.md` are regenerated.
+- more than 40 tests pass;
+- coverage remains at or above 90 per cent;
+- Ruff reports no lint or format errors;
+- the dependency audit reports no known vulnerabilities;
+- the blocked sample returns score 12 with 39 exceptions;
+- the 100,000 row benchmark completes and reports throughput.
 
-## Good Reviewer Questions
+## Interview discussion
 
-- Are the rule names understandable to a business user?
-- Does each rule produce a clear owner action?
-- Are severity and scoring assumptions explicit enough to challenge?
-- Are synthetic data limitations visible?
-- Would this be safe to run before a management reporting cycle?
-
-## Current Limitations
-
-- Batch CSV processing only.
-- Synthetic data only.
-- No production scheduler, database integration, or access control layer.
-- The score is an explainable readiness signal, not a statistical model.
-
-## Strongest Interview Angle
-
-Use this repo to discuss how to design data quality checks that people can actually act on: rule wording, severity, exception ownership, output format, tests, and the boundary between a local engine and a production service.
+The useful discussion is not whether 12 is the perfect score. It is how to agree a rule with owners, prevent a policy change from becoming an invisible code edit, preserve lineage, set a pipeline gate, respond to failed records, and decide which controls belong in a production platform rather than this engine.

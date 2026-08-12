@@ -1,0 +1,25 @@
+version: "1.0.0"
+
+rules:
+  DQ001: {enabled: true, severity: High}
+  DQ002: {enabled: true, severity: High}
+  DQ003: {enabled: true, severity: High}
+  DQ004: {enabled: true, severity: High}
+  DQ005: {enabled: true, severity: Medium}
+  DQ006: {enabled: true, severity: Medium}
+  DQ007: {enabled: true, severity: Medium}
+  DQ008: {enabled: true, severity: Medium}
+  DQ009: {enabled: true, severity: High}
+  DQ010: {enabled: true, severity: High}
+  DQ011: {enabled: true, severity: Medium}
+  DQ012: {enabled: true, severity: Medium}
+  DQ013: {enabled: true, severity: Medium}
+
+parameters:
+  stale_review_cycles: 2
+
+readiness:
+  ready_score: 85
+  review_score: 70
+  correction_score: 50
+  block_ready_on_high_severity: true

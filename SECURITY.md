@@ -1,26 +1,13 @@
 # Security Policy
 
-## Supported scope
+## Report privately
 
-This is a public portfolio project using synthetic data. It is not a production
-service and must not be used with real client, customer, employee, or protected
-operational data without a separate security review.
+Do not open a public issue for a suspected vulnerability, leaked secret, or sensitive data exposure. Use GitHub private vulnerability reporting when it is available, or contact the repository owner through the GitHub profile.
 
-## Reporting a vulnerability
+Include the affected version or commit, safe reproduction steps, expected impact, and any suggested correction. Do not include a working secret or real personal data in the report.
 
-Please do not open a public issue for suspected vulnerabilities or accidental
-secret exposure. Use GitHub private vulnerability reporting if enabled, or
-contact the repository owner through the GitHub profile.
+## Supported use
 
-Include:
+This repository is a local reference implementation with synthetic data. It is not approved for protected, client, employee, or operational data. A production use needs a separate security and data protection review.
 
-- affected file or workflow;
-- reproduction steps;
-- potential impact;
-- any safe remediation suggestion.
-
-## Data handling
-
-Only synthetic sample data should be committed. Do not submit pull requests that
-include real personal data, client names, internal business documents, secrets,
-tokens, credentials, or live service exports.
+See the [security posture](docs/security-posture.md) for implemented controls and residual risks.

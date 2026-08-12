@@ -4,13 +4,16 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "operational-data-quality-engine"
-version = "0.1.0"
-description = "A portfolio data quality engine for operational reporting tracker checks."
+version = "0.2.0"
+description = "A configurable data quality gate for operational reporting records."
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
 authors = [{ name = "Michael" }]
-dependencies = []
+dependencies = [
+    "duckdb>=1.4.0,<2",
+    "PyYAML>=6.0.2,<7",
+]
 
 [project.scripts]
 quality-engine = "quality_engine.cli:main"
@@ -20,6 +23,7 @@ dev = [
     "filelock>=3.20.3",
     "msgpack>=1.2.1",
     "pip-audit>=2.9,<3",
+    "pytest-cov>=7.0.0,<8",
     "pytest>=9.0.3",
     "requests>=2.33.0",
     "ruff>=0.6.0",
@@ -32,6 +36,7 @@ where = ["src"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
+addopts = "--cov=quality_engine --cov-report=term-missing --cov-fail-under=90"
 
 [tool.ruff]
 line-length = 100

@@ -1,24 +1,28 @@
 import csv
+from datetime import date
 from pathlib import Path
 
 from quality_engine.ingest import load_operational_tracker
 from quality_engine.reporting import (
     EXCEPTION_REGISTER_FIELDS,
     build_exception_register,
+    render_quality_report_html,
     write_exception_register,
 )
-from quality_engine.rules import run_core_rules
+from quality_engine.rules import ValidationIssue, run_core_rules
+from quality_engine.scoring import calculate_quality_summary
 
 SAMPLE_FILE = Path("data/raw/operational_tracker_sample.csv")
+REPORT_DATE = date(2026, 6, 19)
 
 
 def test_build_exception_register_maps_validation_issues_to_public_columns() -> None:
     records = load_operational_tracker(SAMPLE_FILE)
-    issues = run_core_rules(records)
+    issues = run_core_rules(records, REPORT_DATE)
 
     register = build_exception_register(issues)
 
-    assert len(register) == 31
+    assert len(register) == 39
     assert tuple(register[0]) == EXCEPTION_REGISTER_FIELDS
     assert register[0] == {
         "rule_id": "DQ001",
@@ -26,14 +30,14 @@ def test_build_exception_register_maps_validation_issues_to_public_columns() -> 
         "severity": "High",
         "record_id": "OP-1003",
         "field": "owner_name,owner_email",
-        "issue": "Record is missing owner details needed for follow-up.",
+        "issue": "Record is missing owner details needed for follow up.",
         "recommended_action": "Add owner name and owner email before reporting.",
     }
 
 
 def test_write_exception_register_creates_csv_from_actual_rules(tmp_path: Path) -> None:
     records = load_operational_tracker(SAMPLE_FILE)
-    issues = run_core_rules(records)
+    issues = run_core_rules(records, REPORT_DATE)
     output_path = tmp_path / "exception_register.csv"
 
     written_path = write_exception_register(issues, output_path)
@@ -43,8 +47,29 @@ def test_write_exception_register_creates_csv_from_actual_rules(tmp_path: Path) 
     with output_path.open(newline="", encoding="utf-8") as csv_file:
         rows = list(csv.DictReader(csv_file))
 
-    assert len(rows) == 31
+    assert len(rows) == 39
     assert rows[0]["rule_id"] == "DQ001"
-    assert rows[-1]["record_id"] == "OP-1024"
-    assert rows[-1]["rule_id"] == "DQ010"
+    assert rows[-1]["record_id"] == "OP-1003"
+    assert rows[-1]["rule_id"] == "DQ012"
     assert set(rows[0]) == set(EXCEPTION_REGISTER_FIELDS)
+
+
+def test_html_report_escapes_source_text_and_shows_run_identity() -> None:
+    records = load_operational_tracker(SAMPLE_FILE)
+    issue = ValidationIssue(
+        rule_id="DQ001",
+        rule_name="Missing owner details",
+        severity="High",
+        record_id="<script>alert(1)</script>",
+        field="owner_name",
+        message="Missing <owner>",
+        recommended_action="Add owner",
+    )
+    summary = calculate_quality_summary(records, [issue], REPORT_DATE)
+
+    html = render_quality_report_html(summary, [issue], REPORT_DATE, "review-run")
+
+    assert "review-run" in html
+    assert "&lt;script&gt;alert(1)&lt;/script&gt;" in html
+    assert "Missing &lt;owner&gt;" in html
+    assert "<script>alert(1)</script>" not in html

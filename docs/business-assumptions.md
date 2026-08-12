@@ -1,77 +1,33 @@
 # Business Assumptions
 
-## Scenario assumptions
+The worked case is a monthly service review. A reporting team receives a tracker of issues, actions, risks, reviews, and closures. The decision is whether the tracker is reliable enough to support the management pack dated 19 June 2026.
 
-- A team maintains a manual operational tracker that supports reporting or assurance review.
-- The tracker contains generic records such as actions, findings, service issues, or risk items.
-- Records may be open, in review, blocked, closed, or cancelled.
-- Records may require evidence when they are closed or when the risk rating is high.
-- Open and high-risk records should have a clear action owner.
-- Review dates are used to judge whether records are current enough for reporting.
-- The engine reports exceptions rather than automatically changing source records.
+## Record assumptions
 
-## Data assumptions
+- Each nonblank `record_id` identifies one authoritative record.
+- Active items use `open`, `in_review`, or `blocked`.
+- A closed item needs closure evidence.
+- An unresolved item needs an action owner.
+- Review and action dates use `YYYY-MM-DD`.
+- Risk values are `low`, `medium`, `high`, or `critical`.
+- Evidence fields are references. This engine does not open or validate the evidence itself.
+- Cancelled records do not need review evidence under the current policy.
 
-- Sample data is synthetic and non-client.
-- The first sample dataset is `data/raw/operational_tracker_sample.csv`.
-- Dates will use ISO format: `YYYY-MM-DD`.
-- Blank strings and missing values should be treated consistently.
-- Reference values should be held separately from the raw tracker where practical.
-- Record identifiers are expected to be unique.
-- Email addresses in sample data use the reserved `example.com` domain.
-- Evidence fields are references only. The referenced evidence files do not exist in this layer.
+## Decision assumptions
 
-## Sample data assumptions
+The score supports a review; it does not replace one. High severity failures can matter even when the aggregate score passes a threshold. A reporting owner still needs to understand which metrics and statements depend on the failed records.
 
-- The sample tracker is designed around a reporting review date of `2026-06-19`.
-- Active statuses are `open`, `in_review`, and `blocked`.
-- `closed` records should normally have closure evidence.
-- `cancelled` records may not require evidence if no work was completed.
-- High and critical records should normally have evidence and an action owner.
-- Low-risk open records may have optional evidence depending on the issue category.
-- Some rows deliberately break the expected rules so validation tests can be meaningful.
+The default readiness bands are configurable:
 
-## Planned status assumptions
+| Score | Band |
+| ---: | --- |
+| 85 to 100 | Ready for routine reporting |
+| 70 to 84 | Usable with review |
+| 50 to 69 | Needs correction before reporting |
+| 0 to 49 | Not ready for reporting |
 
-Approved status values are expected to include:
+A high or critical exception prevents the routine ready band even when the numeric score is 85 or higher. The result falls to usable with review until that exception is corrected or the policy is changed through its normal approval route.
 
-- `open`
-- `in_review`
-- `blocked`
-- `closed`
-- `cancelled`
+## Data boundary
 
-The implementation should define the exact list in code and reference data.
-
-## Planned risk assumptions
-
-Approved risk ratings are expected to include:
-
-- `low`
-- `medium`
-- `high`
-- `critical`
-
-High and critical records should receive stronger checks around ownership, escalation, and evidence.
-
-## Reporting-readiness assumptions
-
-The quality engine should help answer:
-
-- Are records complete enough to report?
-- Are open records owned and current?
-- Are high-risk records being actively managed?
-- Are closed records supported by evidence?
-- Would the tracker create obvious reporting errors such as duplicates or invalid status values?
-
-## Sample dataset caveat
-
-The sample data intentionally includes flawed rows. The presence of a row in the sample file should not be read as an endorsed operating practice.
-
-## Out of scope
-
-- Real organisational or employer-owned data.
-- Claims that this represents delivery for a named organisation.
-- Live system integration.
-- Workflow automation or automatic correction of source data.
-- Formal data governance certification.
+All supplied data is synthetic. Names are invented, emails use `example.com`, evidence paths are illustrative, and no record describes a real person, client, employer, or service event.

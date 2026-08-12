@@ -4,7 +4,7 @@
 
 `data/raw/operational_tracker_sample.csv`
 
-This file is a synthetic operational tracker for testing data quality rules. It is not client data, workplace data, or an extract from any real system.
+This synthetic operational tracker drives the blocked reporting scenario. The two smaller files in `data/scenarios/` cover clean and review outcomes. None came from a real system.
 
 ## Field definitions
 
@@ -21,13 +21,13 @@ This file is a synthetic operational tracker for testing data quality rules. It 
 | `evidence_link` | string | Conditional | Reference to review or supporting evidence. | `evidence/OP-1001-review-note.pdf` |
 | `last_reviewed_date` | date | Yes for active records | Date the record was last reviewed. | `2026-06-03` |
 | `next_review_due` | date | Yes for active records | Date the next review is due. | `2026-07-03` |
-| `action_owner` | string | Yes for active high-risk records | Person or role responsible for the next action. | `Jordan Lee` |
+| `action_owner` | string | Yes for active high risk records | Person or role responsible for the next action. | `Jordan Lee` |
 | `action_due_date` | date | Conditional | Due date for the next action. | `2026-06-28` |
 | `issue_category` | string | Yes | Generic issue grouping for analysis and exception reporting. | `service_backlog` |
 | `closure_evidence` | string | Required for closed records | Reference supporting closure. | `evidence/OP-1004-closure.pdf` |
-| `notes` | string | Optional | Short human-readable note explaining the sample scenario. | `Clean open record with current review` |
+| `notes` | string | Optional | Short plain language note explaining the sample scenario. | `Clean open record with current review` |
 
-## Approved values planned for validation
+## Approved values
 
 ### `review_cycle`
 
@@ -55,7 +55,7 @@ This file is a synthetic operational tracker for testing data quality rules. It 
 
 Dates use ISO format: `YYYY-MM-DD`.
 
-The sample data is designed around a reporting review date of `2026-06-19`. Future validation logic should avoid hard-coding that date in business rules unless a report date parameter is supplied.
+The sample data is designed around `2026-06-19`. The CLI requires the report date, and the run manifest records it. No business date is embedded in a rule.
 
 ## Deliberate quality scenarios
 
@@ -68,8 +68,7 @@ The sample file includes records designed to support rule tests for:
 - overdue reviews;
 - stale open records;
 - missing evidence;
-- high-risk or critical records without action owners;
+- high risk or critical records without action owners;
 - closed records without closure evidence;
 - action due dates that have passed;
 - review cycles where `next_review_due` is earlier than `last_reviewed_date`.
-

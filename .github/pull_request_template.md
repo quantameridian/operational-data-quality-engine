@@ -4,9 +4,9 @@
 
 ## Review checklist
 
-- [ ] Data remains synthetic and non-client.
-- [ ] README/docs reflect the current behavior.
-- [ ] Generated/cache files are not included.
+- [ ] The repository contains only synthetic data and no client data.
+- [ ] The README and docs reflect the current behaviour.
+- [ ] Generated files and caches are not included.
 - [ ] Relevant checks were run.
 
 ## Validation

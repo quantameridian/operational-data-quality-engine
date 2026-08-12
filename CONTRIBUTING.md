@@ -1,24 +1,14 @@
 # Contributing
 
-This repository is primarily a portfolio artifact, but contributions and review
-comments are welcome if they improve clarity, correctness, or reproducibility.
+Changes are welcome when they improve correctness, evidence, or operation.
 
-## Before opening a pull request
+## Before a pull request
 
-1. Keep all data synthetic and non-client.
-2. Keep generated/cache folders out of Git.
-3. Run:
+1. Keep all sample data synthetic.
+2. Explain the reporting risk or owner need behind a rule change.
+3. Update the YAML policy, JSON contract, tests, and generated outputs together.
+4. Run `make qa`, `make audit`, and any relevant benchmark.
+5. Check that a second `make qa` leaves tracked outputs unchanged.
+6. State compatibility, security, and performance effects in the pull request.
 
-   ```bash
-   make test
-   make lint
-   make run
-   ```
-
-4. Update README or docs when behavior changes.
-5. Explain the business reason for the change, not only the technical edit.
-
-## Review standard
-
-A change is not ready if it makes the project look more polished while reducing
-truthfulness, reproducibility, or reviewer confidence.
+Do not commit local databases, virtual environments, caches, logs, editor files, credentials, internal URLs, or real operational records.

@@ -4,13 +4,19 @@ from __future__ import annotations
 
 from collections import Counter
 from collections.abc import Iterable
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import date, datetime
 
+from quality_engine.config import EngineConfig
 from quality_engine.ingest import Record
-from quality_engine.schema import COMPLETION_STATUSES, VALID_STATUSES
+from quality_engine.schema import (
+    COMPLETION_STATUSES,
+    REVIEW_CYCLE_DAYS,
+    VALID_REVIEW_CYCLES,
+    VALID_RISK_RATINGS,
+    VALID_STATUSES,
+)
 
-DEFAULT_REPORT_DATE = date(2026, 6, 19)
 UNRESOLVED_STATUSES: tuple[str, ...] = (
     "open",
     "in_review",
@@ -18,12 +24,6 @@ UNRESOLVED_STATUSES: tuple[str, ...] = (
     "pending",
     "awaiting_update",
 )
-REVIEW_CYCLE_DAYS: dict[str, int] = {
-    "weekly": 7,
-    "fortnightly": 14,
-    "monthly": 30,
-    "quarterly": 90,
-}
 
 
 @dataclass(frozen=True)
@@ -76,7 +76,7 @@ def find_missing_owner(records: Iterable[Record]) -> list[ValidationIssue]:
                     severity="High",
                     record_id=record.get("record_id", ""),
                     field=",".join(missing_fields),
-                    message="Record is missing owner details needed for follow-up.",
+                    message="Record is missing owner details needed for follow up.",
                     recommended_action="Add owner name and owner email before reporting.",
                 )
             )
@@ -175,9 +175,100 @@ def find_missing_completion_evidence(records: Iterable[Record]) -> list[Validati
     return issues
 
 
+def find_missing_evidence(records: Iterable[Record]) -> list[ValidationIssue]:
+    """Flag active records without a supporting review evidence reference."""
+
+    issues: list[ValidationIssue] = []
+    for record in records:
+        status = _normalise(record.get("status"))
+        if status != "cancelled" and _is_blank(record.get("evidence_link")):
+            issues.append(
+                ValidationIssue(
+                    rule_id="DQ008",
+                    rule_name="Missing review evidence",
+                    severity="Medium",
+                    record_id=record.get("record_id", ""),
+                    field="evidence_link",
+                    message="Record does not include a reference to supporting review evidence.",
+                    recommended_action="Add an evidence reference or record an approved exception.",
+                )
+            )
+    return issues
+
+
+def find_invalid_risk_ratings(records: Iterable[Record]) -> list[ValidationIssue]:
+    """Flag risk ratings outside the approved reference values."""
+
+    valid_ratings = set(VALID_RISK_RATINGS)
+    issues: list[ValidationIssue] = []
+    for record in records:
+        rating = (record.get("risk_rating") or "").strip()
+        if rating not in valid_ratings:
+            issues.append(
+                ValidationIssue(
+                    rule_id="DQ011",
+                    rule_name="Invalid risk rating",
+                    severity="Medium",
+                    record_id=record.get("record_id", ""),
+                    field="risk_rating",
+                    message=f"Risk rating '{record.get('risk_rating', '')}' is not approved.",
+                    recommended_action="Update the risk rating to an approved value.",
+                )
+            )
+    return issues
+
+
+def find_invalid_review_cycle_values(records: Iterable[Record]) -> list[ValidationIssue]:
+    """Flag review cycle values outside the approved reference values."""
+
+    valid_cycles = set(VALID_REVIEW_CYCLES)
+    issues: list[ValidationIssue] = []
+    for record in records:
+        cycle = (record.get("review_cycle") or "").strip()
+        if cycle not in valid_cycles:
+            issues.append(
+                ValidationIssue(
+                    rule_id="DQ012",
+                    rule_name="Invalid review cycle value",
+                    severity="Medium",
+                    record_id=record.get("record_id", ""),
+                    field="review_cycle",
+                    message=f"Review cycle '{record.get('review_cycle', '')}' is not approved.",
+                    recommended_action="Update the review cycle to an approved value.",
+                )
+            )
+    return issues
+
+
+def find_invalid_dates(records: Iterable[Record]) -> list[ValidationIssue]:
+    """Flag nonblank date values that are not valid ISO calendar dates."""
+
+    date_fields = ("last_reviewed_date", "next_review_due", "action_due_date")
+    issues: list[ValidationIssue] = []
+    for record in records:
+        invalid_fields = [
+            field
+            for field in date_fields
+            if not _is_blank(record.get(field)) and _parse_date(record.get(field)) is None
+        ]
+        if invalid_fields:
+            issues.append(
+                ValidationIssue(
+                    rule_id="DQ013",
+                    rule_name="Invalid date value",
+                    severity="Medium",
+                    record_id=record.get("record_id", ""),
+                    field=",".join(invalid_fields),
+                    message="One or more dates are not valid YYYY-MM-DD calendar dates.",
+                    recommended_action="Correct the date values before reporting.",
+                )
+            )
+    return issues
+
+
 def find_overdue_reviews(
     records: Iterable[Record],
-    report_date: date = DEFAULT_REPORT_DATE,
+    report_date: date,
 ) -> list[ValidationIssue]:
     """Flag unresolved records where the next review due date has passed."""
 
@@ -201,7 +292,8 @@ def find_overdue_reviews(
 
 def find_stale_records(
     records: Iterable[Record],
-    report_date: date = DEFAULT_REPORT_DATE,
+    report_date: date,
+    stale_review_cycles: int = 2,
 ) -> list[ValidationIssue]:
     """Flag unresolved records that have gone more than two review cycles without review."""
 
@@ -215,7 +307,7 @@ def find_stale_records(
             continue
 
         days_since_review = (report_date - last_reviewed).days
-        if days_since_review > cycle_days * 2:
+        if days_since_review > cycle_days * stale_review_cycles:
             issues.append(
                 ValidationIssue(
                     rule_id="DQ006",
@@ -223,7 +315,10 @@ def find_stale_records(
                     severity="Medium",
                     record_id=record.get("record_id", ""),
                     field="last_reviewed_date",
-                    message="Unresolved record has not been reviewed within two expected cycles.",
+                    message=(
+                        "Unresolved record has not been reviewed within "
+                        f"{stale_review_cycles} expected cycles."
+                    ),
                     recommended_action="Review the record and confirm whether it remains current.",
                 )
             )
@@ -261,7 +356,7 @@ def find_invalid_review_cycles(records: Iterable[Record]) -> list[ValidationIssu
 
 def find_overdue_actions(
     records: Iterable[Record],
-    report_date: date = DEFAULT_REPORT_DATE,
+    report_date: date,
 ) -> list[ValidationIssue]:
     """Flag unresolved records where the action due date has passed."""
 
@@ -287,19 +382,32 @@ def find_overdue_actions(
 
 def run_core_rules(
     records: Iterable[Record],
-    report_date: date = DEFAULT_REPORT_DATE,
+    report_date: date,
+    config: EngineConfig | None = None,
 ) -> list[ValidationIssue]:
-    """Run the first implemented data quality rules."""
+    """Run enabled data quality rules with configured severity overrides."""
 
     materialised = list(records)
-    return [
+    stale_cycles = config.stale_review_cycles if config else 2
+    issues = [
         *find_missing_owner(materialised),
         *find_missing_action_owner(materialised),
         *find_invalid_status(materialised),
         *find_duplicate_record_ids(materialised),
         *find_overdue_reviews(materialised, report_date),
-        *find_stale_records(materialised, report_date),
+        *find_stale_records(materialised, report_date, stale_cycles),
         *find_invalid_review_cycles(materialised),
+        *find_missing_evidence(materialised),
         *find_missing_completion_evidence(materialised),
         *find_overdue_actions(materialised, report_date),
+        *find_invalid_risk_ratings(materialised),
+        *find_invalid_review_cycle_values(materialised),
+        *find_invalid_dates(materialised),
+    ]
+    if config is None:
+        return issues
+    return [
+        replace(issue, severity=config.severity_for(issue.rule_id))
+        for issue in issues
+        if config.enabled(issue.rule_id)
     ]

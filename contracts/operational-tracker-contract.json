@@ -1,12 +1,15 @@
 {
   "contract_name": "operational_tracker_reporting_readiness_contract",
-  "contract_version": "1.0.0",
-  "status": "portfolio_synthetic_contract",
+  "contract_version": "1.1.0",
+  "status": "synthetic_reference_contract",
   "owner_role": "Reporting assurance owner",
   "source_path": "data/raw/operational_tracker_sample.csv",
   "generated_outputs": [
     "outputs/exception_register.csv",
     "outputs/quality_summary.md",
+    "outputs/quality_report.html",
+    "outputs/run_manifest.json",
+    "outputs/quality_run.duckdb",
     "docs/exception-register-preview.md"
   ],
   "required_fields": [
@@ -29,7 +32,8 @@
   ],
   "approved_values": {
     "status": ["open", "in_review", "blocked", "closed", "cancelled"],
-    "review_cycle": ["weekly", "fortnightly", "monthly", "quarterly"]
+    "review_cycle": ["weekly", "fortnightly", "monthly", "quarterly"],
+    "risk_rating": ["low", "medium", "high", "critical"]
   },
   "implemented_rules": [
     {
@@ -75,6 +79,12 @@
       "blocks_uncaveated_reporting": false
     },
     {
+      "rule_id": "DQ008",
+      "rule_name": "Missing review evidence",
+      "severity": "Medium",
+      "blocks_uncaveated_reporting": false
+    },
+    {
       "rule_id": "DQ009",
       "rule_name": "Closed item missing closure evidence",
       "severity": "High",
@@ -85,13 +95,31 @@
       "rule_name": "Overdue action",
       "severity": "High",
       "blocks_uncaveated_reporting": true
+    },
+    {
+      "rule_id": "DQ011",
+      "rule_name": "Invalid risk rating",
+      "severity": "Medium",
+      "blocks_uncaveated_reporting": false
+    },
+    {
+      "rule_id": "DQ012",
+      "rule_name": "Invalid review cycle value",
+      "severity": "Medium",
+      "blocks_uncaveated_reporting": false
+    },
+    {
+      "rule_id": "DQ013",
+      "rule_name": "Invalid date value",
+      "severity": "Medium",
+      "blocks_uncaveated_reporting": false
     }
   ],
   "readiness_thresholds": {
-    "ready": "Score >= 90 and no high-severity exceptions affecting headline reporting",
-    "ready_with_caveats": "Score >= 75 and high-severity exceptions are owned with visible caveats",
-    "review_required": "Score >= 60 or repeated high-severity exceptions require assurance review",
-    "not_ready": "Score < 60 or schema validation fails"
+    "ready_score": 85,
+    "review_score": 70,
+    "correction_score": 50,
+    "block_ready_on_high_severity": true
   },
   "public_data_boundary": {
     "synthetic_only": true,

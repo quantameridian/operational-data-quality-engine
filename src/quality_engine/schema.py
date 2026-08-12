@@ -32,6 +32,15 @@ VALID_STATUSES: tuple[str, ...] = (
     "cancelled",
 )
 
+VALID_RISK_RATINGS: tuple[str, ...] = ("low", "medium", "high", "critical")
+REVIEW_CYCLE_DAYS: dict[str, int] = {
+    "weekly": 7,
+    "fortnightly": 14,
+    "monthly": 30,
+    "quarterly": 90,
+}
+VALID_REVIEW_CYCLES: tuple[str, ...] = tuple(REVIEW_CYCLE_DAYS)
+
 COMPLETION_STATUSES: tuple[str, ...] = ("closed", "complete")
 
 

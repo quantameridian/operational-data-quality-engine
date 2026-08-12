@@ -1,52 +1,34 @@
 # Security Posture
 
-## Scope
+## Public data boundary
 
-This is a public portfolio repository. All committed files must be safe for full
-public review. The project uses synthetic data only and must not contain client
-data, employer data, credentials, tokens, private URLs, or internal system names.
+Normal execution needs no network connection, credential, token, or private endpoint. Every committed record is synthetic. Real operational data, internal URLs, tenant identifiers, credentials, certificates, and personal information must not enter this repository.
 
-## Current Controls
+## Repository controls
 
-- GitHub Actions CI uses read-only repository contents permission.
-- Python dependency checks target Python 3.11 or newer so fixed tooling
-  versions are installable.
-- Python dependencies are audited in CI with `pip-audit`.
-- CodeQL scans the Python code path.
-- OpenSSF Scorecard runs on the public repository and uploads SARIF results.
-- Dependabot version updates are configured for Python and GitHub Actions.
-- Security reporting instructions are documented in `SECURITY.md`.
-- Generated cache and local environment folders are excluded by `.gitignore`.
+- GitHub Actions receive read only repository contents permission.
+- Third party actions are pinned to full commit hashes.
+- CI runs Ruff, the test and coverage gate, `pip-audit`, the sample engine, and a scale smoke check.
+- CodeQL scans Python changes.
+- OpenSSF Scorecard reviews repository and supply chain settings.
+- Dependabot checks Python and GitHub Actions dependencies.
+- `SECURITY.md` routes vulnerability reports away from public issues.
+- Local databases, environments, caches, logs, editor files, and build outputs are ignored.
 
-## Data and Secret Boundary
+## Input handling
 
-The engine reads synthetic CSV files from `data/` and writes generated sample
-outputs to `outputs/` and `docs/`. It does not require secrets, API tokens,
-database credentials, or network access for normal execution.
+CSV files use the Python standard library parser and must match the required header contract. DuckDB input uses a read only connection. Table names accept only letters, numbers, and underscores before they are included in SQL. Values are selected through a fixed field list.
 
-Do not commit:
+These controls do not make arbitrary untrusted files harmless. Run unknown data in an isolated environment with resource limits. Do not expose the local CLI directly as a network service.
 
-- real operational trackers;
-- customer, employer, or client data;
-- API keys, passwords, tokens, certificates, or private keys;
-- internal hostnames, tenant IDs, or private repository URLs;
-- local virtual environments, caches, coverage output, or build artifacts.
+## Provenance
 
-## GitHub Settings To Keep Enabled
+The run manifest records SHA256 hashes for the source, rule policy, and generated text outputs. This supports comparison and review. It is not a signed attestation and does not prove who supplied or approved a file.
 
-These controls live in GitHub repository settings rather than source files:
+## GitHub settings
 
-- secret scanning and push protection;
-- Dependabot alerts and Dependabot security updates;
-- branch protection or repository rulesets for `main`;
-- required CI checks before merging;
-- blocked force pushes and branch deletion;
-- default workflow token permission set to read-only.
+Keep secret scanning, push protection, Dependabot alerts, security updates, private vulnerability reporting, and read only default workflow tokens enabled. Protect `main` with required CI checks, blocked force pushes, and blocked deletion when the repository plan supports rulesets for a private owner account.
 
-## Residual Risk
+## Residual risk
 
-This repository demonstrates a small batch data-quality engine. It is not a
-production service, does not implement authentication, and does not protect live
-systems. Security review should focus on supply-chain hygiene, public-data
-boundaries, generated-output safety, and whether the repository avoids leaking
-sensitive information.
+There is no authentication, authorisation, encryption service, sandbox, rate limit, scheduler, alert route, or incident integration. Dependencies are version bounded but not locked with hashes. A production deployment needs a threat model, approved data classification, least privilege access, secret management, patch ownership, logging, retention, recovery, and independent security review.
