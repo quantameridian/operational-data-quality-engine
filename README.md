@@ -77,7 +77,7 @@ The engine flags source records. It does not silently repair them. The reporting
 
 ## Rules
 
-Rules and severities live in [config/default-rules.yml](config/default-rules.yml). The JSON [data contract](contracts/operational-tracker-contract.json) is checked against the Python schema and output contract in the test suite.
+Rules and severities live in the [default rule file](config/default-rules.yml). The JSON [data contract](contracts/operational-tracker-contract.json) is checked against the Python schema and output contract in the test suite.
 
 | Rule | Failure found |
 | --- | --- |

@@ -1,8 +1,11 @@
-.PHONY: install test lint audit run preview benchmark qa clean
+.PHONY: check-python install test lint audit run preview benchmark qa clean
 
 PYTHON ?= python3
 
-install:
+check-python:
+	@$(PYTHON) -c 'import sys; sys.exit("Python 3.11 or newer is required") if sys.version_info < (3, 11) else None'
+
+install: check-python
 	$(PYTHON) -m pip install --upgrade 'pip>=26.1.2' setuptools wheel
 	$(PYTHON) -m pip install -e '.[dev]'
 

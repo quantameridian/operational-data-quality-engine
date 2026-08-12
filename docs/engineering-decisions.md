@@ -32,4 +32,4 @@ The local DuckDB output is ignored because binary database changes are difficult
 
 ## Synthetic public data
 
-No real tracker or copied business document is needed to demonstrate the control. Synthetic records use `example.com` email addresses and generic evidence references. This reduces disclosure risk but also means the repository cannot prove behavior against the volume, mess, or controls of a real source system.
+No real tracker or copied business document is needed to show how the control works. Synthetic records use `example.com` email addresses and plain evidence references. This reduces disclosure risk but also means the repository cannot prove behaviour against the volume, mess, or controls of a real source system.

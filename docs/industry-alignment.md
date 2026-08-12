@@ -4,7 +4,7 @@ This page explains why the repository contains particular evidence. It is not a 
 
 ## Data engineering
 
-The [Google Cloud Professional Data Engineer](https://cloud.google.com/learn/certification/data-engineer) role description covers designing processing systems, ingesting and storing data, preparing data for analysis, and maintaining and automating workloads. It also describes performance and security as part of robust data infrastructure.
+The [Google Cloud Professional Data Engineer](https://cloud.google.com/learn/certification/data-engineer) role description covers designing processing systems, ingesting and storing data, preparing data for analysis, and maintaining and automating workloads. It also treats performance and security as part of reliable data infrastructure.
 
 Evidence here includes:
 
@@ -15,7 +15,7 @@ Evidence here includes:
 - machine readable events and pipeline exit codes;
 - CI, coverage, dependency audit, and a measured benchmark.
 
-This repository does not demonstrate Google Cloud services. The alignment is with engineering responsibilities, not a cloud product claim.
+This repository does not include Google Cloud services. The alignment is with engineering responsibilities, not a cloud product claim.
 
 ## Analytics architecture
 

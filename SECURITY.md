@@ -10,4 +10,4 @@ Include the affected version or commit, safe reproduction steps, expected impact
 
 This repository is a local reference implementation with synthetic data. It is not approved for protected, client, employee, or operational data. A production use needs a separate security and data protection review.
 
-See [docs/security-posture.md](docs/security-posture.md) for implemented controls and residual risks.
+See the [security posture](docs/security-posture.md) for implemented controls and residual risks.
