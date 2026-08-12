@@ -1,56 +1,44 @@
 # Operational Runbook
 
-## Purpose
+## Monthly reporting gate
 
-This runbook defines how the data quality engine would be used in a reporting
-cycle. It is written for portfolio review and uses synthetic data only.
-
-The engine should not only find bad records. It should help a reporting owner
-decide what happens next: publish, publish with caveats, escalate, or stop.
-
-## Reporting Cycle
-
-| Step | Owner role | Command or artifact | Expected evidence |
+| Step | Owner | Action | Evidence |
 | --- | --- | --- | --- |
-| Confirm source receipt | Reporting owner | `data/raw/operational_tracker_sample.csv` | Source file has expected columns |
-| Validate and run checks | Analytics or assurance owner | `make run` | Exception register and quality summary generated |
-| Review high severity issues | Reporting assurance owner | `outputs/exception_register.csv` | Important issues assigned or caveated |
-| Decide readiness state | Reporting owner and decision owner | `outputs/quality_summary.md` | Ready, ready with caveats, review required, or not ready |
-| Assign corrections | Source data owner | Exception register actions | Owner, due date, and closure evidence agreed |
-| Refresh preview | Analytics or assurance owner | `make preview` | Markdown preview refreshed |
-| Capture learning | Reporting assurance owner | Rule catalogue update | Repeated failure patterns reviewed |
+| Receive source | Reporting owner | Place the approved extract in the controlled input location | Source name and receipt record |
+| Confirm run context | Reporting owner | Set report date, rule policy, and run identifier | Command or scheduler parameters |
+| Execute gate | Data engineer | Run the CLI with a minimum score agreed for the report | JSON events and process exit code |
+| Review exceptions | Data owner and assurance owner | Assign high severity failures and assess metric impact | Exception register |
+| Decide use | Reporting owner | Publish, publish with a visible caveat, or stop | Quality report and decision record |
+| Retain lineage | Data engineer | Retain the manifest and approved outputs with the report | Hashes and run identifier |
 
-## Readiness Decision Rules
+Example gate:
 
-| State | Trigger | Reporting action |
-| --- | --- | --- |
-| Ready | No important exceptions affect headline outputs and score is at least 90 | Publish normally |
-| Ready with caveats | Issues exist but are owned and do not invalidate headline interpretation | Publish with visible caveats |
-| Review required | Important issues affect headline interpretation or repeated failures recur | Escalate before formal use |
-| Not ready | Schema validation fails or score is below 60 | Do not use for formal decision support |
+```bash
+quality-engine \
+  --input approved/monthly_tracker.duckdb \
+  --input-table operational_tracker \
+  --output-dir run/2026-06 \
+  --report-date 2026-06-19 \
+  --rules-config config/default-rules.yml \
+  --run-id service-review-2026-06 \
+  --log-format json \
+  --fail-below-score 70 \
+  --write-duckdb
+```
 
-## Failure Handling
+## Response
 
-| Failure mode | Likely cause | Response |
-| --- | --- | --- |
-| Schema validation fails | Source extract changed without notice | Stop run, compare source fields to `contracts/operational-tracker-contract.json`, then agree a source fix or contract change |
-| Duplicate record spike | Source tracker has duplicate IDs or merged extracts | Hold metrics affected by duplicates and assign source owner review |
-| Missing owner spike | Ownership process is incomplete | Caveat accountability metrics and assign owner correction |
-| Closed missing evidence spike | Closure process is not enforcing evidence | Escalate to assurance owner before closed performance reporting |
-| Stale record spike | Review cadence is not being followed | Publish with caveat only if decision owner accepts the risk |
+| Condition | Response |
+| --- | --- |
+| Exit code 1 | Stop. Check file availability, schema, table name, date, and policy syntax. Do not use stale output from an earlier run. |
+| Exit code 2 | The run completed but failed the agreed score gate. Review high severity exceptions and affected measures before use. |
+| High severity duplicate | Hold any count that uses the duplicate key until an authoritative record is agreed. |
+| Missing owner on a high risk item | Escalate ownership before presenting the item as controlled. |
+| Closed item without evidence | Reopen it or obtain closure evidence before counting it as complete. |
+| Large overdue review increase | Check source freshness and review process failure before discussing operational movement. |
 
-## What To Inspect
+## Recovery
 
-A reviewer should be able to inspect:
+The engine does not alter the source, so recovery starts with a corrected extract or an approved policy change. Keep the failed manifest and exceptions when they form part of an audit trail. Run again with a new run identifier when the source changes.
 
-- the schema and rule contract in `contracts/operational-tracker-contract.json`;
-- the implemented rules in `src/quality_engine/rules.py`;
-- generated outputs in `outputs/`;
-- the markdown exception preview in `docs/exception-register-preview.md`;
-- tests that prove the contract still matches the Python schema.
-
-## Limitations
-
-This is a local batch runbook, not a production operating procedure. It does not
-include authentication, a scheduler, database access, monitoring alerts, or an
-enterprise incident management integration.
+For a production schedule, add alerts that contain the run identifier and failure class but no sensitive record content. Route operational failure separately from a valid run that fails the quality gate.

@@ -1,69 +1,60 @@
 # Architecture
 
-## Purpose
+## Context
 
-This document defines the current architecture for the operational data quality engine.
+A reporting owner receives an operational tracker before a monthly service review. The tracker is easy to edit but difficult to trust. Ownership can be blank, identifiers can be duplicated, dates can be stale, and a closed item can lack evidence.
 
-The design is intentionally small: a local Python package that reads synthetic operational tracker data, validates the structure, applies business-facing data quality rules, scores the results, and writes reproducible reporting outputs.
+This engine sits between source receipt and report production. It gives the owner a repeatable decision and a register of corrections. It never changes the source record.
 
-## Commercial scenario
-
-A team maintains an operational tracker that feeds a management pack or assurance review. The tracker is manually updated and contains records such as actions, findings, service issues, or risk items. Before the data is used for reporting, the team needs to know whether the records are complete, current, owned, evidenced, and internally consistent.
-
-The engine should provide a repeatable check at that point in the reporting cycle.
-
-## Current data flow
+## Components
 
 ```mermaid
 flowchart TD
-    A["data/raw/operational_tracker_sample.csv"] --> B["Ingest input file"]
-    B --> C["Validate required schema"]
-    C --> D["Apply core data quality rules"]
-    D --> E["Write exception register"]
-    D --> F["Calculate readiness score"]
-    F --> G["Write quality summary"]
-    E --> H["outputs/exception_register.csv"]
-    G --> I["outputs/quality_summary.md"]
+    A["CSV file"] --> C["Ingestion adapter"]
+    B["DuckDB table"] --> C
+    C --> D["Header contract"]
+    D --> E["Configured rule executor"]
+    F["Report date and run identity"] --> E
+    G["YAML rule policy"] --> E
+    E --> H["Exception rows"]
+    E --> I["Readiness calculation"]
+    H --> J["CSV register"]
+    I --> K["Markdown summary"]
+    I --> L["HTML report"]
+    H --> M["DuckDB review database"]
+    I --> M
+    F --> N["JSON run manifest"]
+    J --> N
+    K --> N
+    L --> N
 ```
 
-## Planned repository boundaries
-
-This repo should focus on the data quality engine only. It should not become a dashboard project, a dbt mart, or a general documentation playbook.
-
-In the wider portfolio:
-
-- this repo checks whether operational records are fit for reporting;
-- the analytics engineering repo should model reporting data;
-- the Power BI repo should document KPI and semantic-model design;
-- the architecture playbook should describe operating model and handover patterns.
-
-## Intended components
-
-| Component | Responsibility |
+| Module | Responsibility |
 | --- | --- |
-| `ingest.py` | Load CSV input and validate required headers |
-| `schema.py` | Define required columns and approved status values |
-| `rules.py` | Apply business-readable data quality checks |
-| `scoring.py` | Assign severity and support reporting-readiness scoring |
-| `reporting.py` | Produce exception and summary outputs |
-| `cli.py` | Provide a reviewer-friendly local command |
+| `config.py` | Validate the versioned rule and readiness policy |
+| `context.py` | Build stable run identity and SHA256 lineage |
+| `ingest.py` | Read CSV or DuckDB input against one field contract |
+| `schema.py` | Own required fields and approved values |
+| `rules.py` | Return record level exceptions without changing source data |
+| `scoring.py` | Calculate and explain the readiness result |
+| `reporting.py` | Write CSV, Markdown, HTML, and manifest outputs |
+| `storage.py` | Write source, exception, summary, and lineage tables to DuckDB |
+| `cli.py` | Define the operational interface, event format, and exit codes |
 
-## Planned processing stages
+## Runtime contract
 
-1. Load the synthetic tracker data.
-2. Validate required fields.
-3. Apply each rule independently so failures can be tested and explained.
-4. Combine failures into a single exception register.
-5. Add severity and recommended action.
-6. Produce summary outputs for review.
+The report date is mandatory because overdue and stale results depend on it. A run cannot silently inherit the date on which a developer happens to execute the command.
 
-## Output design principles
+The rule policy is external to the code. A policy change therefore has its own version and hash. The manifest joins that policy identity to the input hash, engine version, decision, and output hashes.
 
-- Exception outputs should identify the specific record and rule that failed.
-- Summary outputs should be understandable without reading the code.
-- Generated files should be reproducible from the sample data.
-- The engine should flag quality issues rather than silently changing source records.
+| Exit code | Meaning |
+| ---: | --- |
+| 0 | The engine completed and any requested score gate passed |
+| 1 | Input, schema, or configuration failed |
+| 2 | The engine completed but the score was below `--fail-below-score` |
 
-## Design principle
+## Trust boundaries
 
-Keep the first version small enough for a reviewer to understand quickly, while still showing production habits: clear module boundaries, tests, documented assumptions, and reproducible outputs.
+The repository contains synthetic data and needs no network connection or secret for a normal run. CSV content and DuckDB tables are untrusted input. CSV is parsed by the standard library. DuckDB table names are restricted to letters, numbers, and underscores before they are used in SQL.
+
+A production service would add identity, encrypted storage, managed secrets, source authentication, event monitoring, retention controls, recovery procedures, and an approved release process. Those controls are outside this local engine.

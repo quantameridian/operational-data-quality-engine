@@ -11,8 +11,8 @@ Band: Not ready for reporting
 ## Inputs
 
 - Records checked: 30
-- Validation exceptions: 31
-- High-risk unresolved records with current exceptions or missing action owner:
+- Validation exceptions: 39
+- High risk unresolved records with current exceptions or missing action owner:
   7
 - Records with missing evidence indicators: 8
 - Records with overdue review date: 10
@@ -20,7 +20,7 @@ Band: Not ready for reporting
 ## Severity Mix
 
 - High: 16
-- Medium: 15
+- Medium: 23
 
 ## Penalties Applied
 
@@ -28,13 +28,13 @@ Band: Not ready for reporting
 | --- | ---: |
 | Exception rate | 30 |
 | Severity mix | 25 |
-| High-risk unresolved exposure | 15 |
+| High risk unresolved exposure | 15 |
 | Missing evidence indicators | 8 |
 | Overdue review indicators | 10 |
 
 ## Interpretation
 
-The score is a practical reporting-readiness indicator. It helps identify whether the
+The score is a practical reporting readiness indicator. It helps identify whether the
 sample tracker is clean enough to use in a management pack or dashboard refresh.
 
 It does not prove that the underlying operational facts are correct, complete, or

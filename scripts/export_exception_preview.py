@@ -9,7 +9,7 @@ from pathlib import Path
 DEFAULT_INPUT = Path("outputs/exception_register.csv")
 DEFAULT_OUTPUT = Path("docs/exception-register-preview.md")
 PREVIEW_ROW_LIMIT = 12
-SEVERITY_ORDER = {"High": 0, "Medium": 1, "Low": 2}
+SEVERITY_ORDER = {"Critical": 0, "High": 1, "Medium": 2, "Low": 3}
 PREVIEW_COLUMNS = [
     "record_id",
     "rule_id",

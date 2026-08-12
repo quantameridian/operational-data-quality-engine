@@ -1,0 +1,6 @@
+record_id,service_area,reporting_unit,owner_name,owner_email,review_cycle,status,risk_rating,evidence_link,last_reviewed_date,next_review_due,action_owner,action_due_date,issue_category,closure_evidence,notes
+CASE-2026-0001,Service Operations,National Operations,Avery Patel,avery.patel@example.com,monthly,open,medium,evidence/CASE-2026-0001.pdf,2026-06-03,2026-07-03,Jordan Lee,2026-06-28,service_backlog,,Current open record
+CASE-2026-0002,Finance Operations,Shared Services,Riley Morgan,riley.morgan@example.com,monthly,in_review,high,evidence/CASE-2026-0002.pdf,2026-06-01,2026-07-01,Sam Taylor,2026-06-25,control_gap,,Current high risk review
+CASE-2026-0003,People Services,Central Support,Casey Brooks,casey.brooks@example.com,fortnightly,open,low,evidence/CASE-2026-0003.pdf,2026-06-10,2026-06-24,Morgan Reed,2026-06-26,process_delay,,Current fortnightly review
+CASE-2026-0004,Facilities Coordination,South Operations,Jamie Chen,jamie.chen@example.com,monthly,closed,low,evidence/CASE-2026-0004.pdf,2026-05-18,2026-06-18,Jamie Chen,2026-05-30,maintenance_follow_up,evidence/CASE-2026-0004-closure.pdf,Closed with evidence
+CASE-2026-0005,Digital Services,Platform Support,Taylor Smith,taylor.smith@example.com,quarterly,open,medium,evidence/CASE-2026-0005.pdf,2026-05-20,2026-08-18,Morgan Reed,2026-07-01,system_access,,Current quarterly review

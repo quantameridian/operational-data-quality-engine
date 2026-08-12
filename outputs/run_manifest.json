@@ -1,0 +1,53 @@
+{
+  "config_path": "config/default-rules.yml",
+  "config_sha256": "3c63cc2636fc7836cc49e632cf7b708ca2973895771c9164286f0ca37e9ab915",
+  "config_version": "1.0.0",
+  "engine_version": "0.2.0",
+  "input_format": "csv",
+  "input_path": "data/raw/operational_tracker_sample.csv",
+  "input_sha256": "d9388a760f3231c53c4d4dc091c54405231b21d11ed70dab8ff0255af7c2c3c5",
+  "outputs": [
+    {
+      "path": "outputs/exception_register.csv",
+      "sha256": "b6102c6a7502716912995541950f2884e31bb6ad7aa7ff045e210c1e71340933"
+    },
+    {
+      "path": "outputs/quality_summary.md",
+      "sha256": "ead3ac535f08bc1d86ccb0d6645f72ed1820594c40188b31940a3ffe7efbf193"
+    },
+    {
+      "path": "outputs/quality_report.html",
+      "sha256": "2bd78cd683d9ebfe3ab353ca249075183673890020e2a347b0eb4c1574294e30"
+    }
+  ],
+  "quality_summary": {
+    "exception_count": 39,
+    "exception_rate_penalty": 30,
+    "high_risk_penalty": 15,
+    "high_risk_unresolved_exception_count": 7,
+    "missing_evidence_count": 8,
+    "missing_evidence_penalty": 8,
+    "overdue_review_count": 10,
+    "overdue_review_penalty": 10,
+    "readiness_band": "Not ready for reporting",
+    "record_count": 30,
+    "score": 12,
+    "severity_counts": {
+      "High": 16,
+      "Medium": 23
+    },
+    "severity_penalty": 25
+  },
+  "report_date": "2026-06-19",
+  "result": {
+    "exception_count": 39,
+    "readiness_band": "Not ready for reporting",
+    "readiness_score": 12,
+    "record_count": 30,
+    "severity_counts": {
+      "High": 16,
+      "Medium": 23
+    }
+  },
+  "run_id": "sample-2026-06-19"
+}

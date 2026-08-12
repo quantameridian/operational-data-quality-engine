@@ -1,6 +1,6 @@
 rule_id,rule_name,severity,record_id,field,issue,recommended_action
-DQ001,Missing owner details,High,OP-1003,"owner_name,owner_email",Record is missing owner details needed for follow-up.,Add owner name and owner email before reporting.
-DQ001,Missing owner details,High,OP-1014,owner_name,Record is missing owner details needed for follow-up.,Add owner name and owner email before reporting.
+DQ001,Missing owner details,High,OP-1003,"owner_name,owner_email",Record is missing owner details needed for follow up.,Add owner name and owner email before reporting.
+DQ001,Missing owner details,High,OP-1014,owner_name,Record is missing owner details needed for follow up.,Add owner name and owner email before reporting.
 DQ003,Missing action owner,High,OP-1006,action_owner,Unresolved record does not have an action owner.,Assign an action owner before the record is used in reporting.
 DQ003,Missing action owner,High,OP-1011,action_owner,Unresolved record does not have an action owner.,Assign an action owner before the record is used in reporting.
 DQ002,Invalid status,High,OP-1005,status,Status 'pending' is not an approved value.,Update the status to an approved value.
@@ -18,11 +18,17 @@ DQ005,Overdue review,Medium,OP-1019,next_review_due,Record review date has passe
 DQ005,Overdue review,Medium,OP-1021,next_review_due,Record review date has passed while the record is unresolved.,Complete the review and update the next review due date.
 DQ005,Overdue review,Medium,OP-1024,next_review_due,Record review date has passed while the record is unresolved.,Complete the review and update the next review due date.
 DQ005,Overdue review,Medium,OP-1025,next_review_due,Record review date has passed while the record is unresolved.,Complete the review and update the next review due date.
-DQ006,Stale record,Medium,OP-1008,last_reviewed_date,Unresolved record has not been reviewed within two expected cycles.,Review the record and confirm whether it remains current.
-DQ006,Stale record,Medium,OP-1019,last_reviewed_date,Unresolved record has not been reviewed within two expected cycles.,Review the record and confirm whether it remains current.
-DQ006,Stale record,Medium,OP-1024,last_reviewed_date,Unresolved record has not been reviewed within two expected cycles.,Review the record and confirm whether it remains current.
-DQ006,Stale record,Medium,OP-1025,last_reviewed_date,Unresolved record has not been reviewed within two expected cycles.,Review the record and confirm whether it remains current.
+DQ006,Stale record,Medium,OP-1008,last_reviewed_date,Unresolved record has not been reviewed within 2 expected cycles.,Review the record and confirm whether it remains current.
+DQ006,Stale record,Medium,OP-1019,last_reviewed_date,Unresolved record has not been reviewed within 2 expected cycles.,Review the record and confirm whether it remains current.
+DQ006,Stale record,Medium,OP-1024,last_reviewed_date,Unresolved record has not been reviewed within 2 expected cycles.,Review the record and confirm whether it remains current.
+DQ006,Stale record,Medium,OP-1025,last_reviewed_date,Unresolved record has not been reviewed within 2 expected cycles.,Review the record and confirm whether it remains current.
 DQ007,Invalid review cycle,Medium,OP-1021,"last_reviewed_date,next_review_due",Next review due date is not after the last reviewed date.,Correct review dates so the next review falls after the last review.
+DQ008,Missing review evidence,Medium,OP-1003,evidence_link,Record does not include a reference to supporting review evidence.,Add an evidence reference or record an approved exception.
+DQ008,Missing review evidence,Medium,OP-1006,evidence_link,Record does not include a reference to supporting review evidence.,Add an evidence reference or record an approved exception.
+DQ008,Missing review evidence,Medium,OP-1011,evidence_link,Record does not include a reference to supporting review evidence.,Add an evidence reference or record an approved exception.
+DQ008,Missing review evidence,Medium,OP-1020,evidence_link,Record does not include a reference to supporting review evidence.,Add an evidence reference or record an approved exception.
+DQ008,Missing review evidence,Medium,OP-1024,evidence_link,Record does not include a reference to supporting review evidence.,Add an evidence reference or record an approved exception.
+DQ008,Missing review evidence,Medium,OP-1029,evidence_link,Record does not include a reference to supporting review evidence.,Add an evidence reference or record an approved exception.
 DQ009,Closed item missing closure evidence,High,OP-1009,closure_evidence,Completed record does not include closure evidence.,Add closure evidence or reopen the record.
 DQ009,Closed item missing closure evidence,High,OP-1028,closure_evidence,Completed record does not include closure evidence.,Add closure evidence or reopen the record.
 DQ010,Overdue action,High,OP-1007,action_due_date,Action due date has passed while the record is unresolved.,"Confirm status, agree recovery action, or escalate the overdue item."
@@ -30,3 +36,5 @@ DQ010,Overdue action,High,OP-1007,action_due_date,Action due date has passed whi
 DQ010,Overdue action,High,OP-1016,action_due_date,Action due date has passed while the record is unresolved.,"Confirm status, agree recovery action, or escalate the overdue item."
 DQ010,Overdue action,High,OP-1022,action_due_date,Action due date has passed while the record is unresolved.,"Confirm status, agree recovery action, or escalate the overdue item."
 DQ010,Overdue action,High,OP-1024,action_due_date,Action due date has passed while the record is unresolved.,"Confirm status, agree recovery action, or escalate the overdue item."
+DQ011,Invalid risk rating,Medium,OP-1015,risk_rating,Risk rating 'severe' is not approved.,Update the risk rating to an approved value.
+DQ012,Invalid review cycle value,Medium,OP-1003,review_cycle,Review cycle '' is not approved.,Update the review cycle to an approved value.

@@ -5,244 +5,113 @@
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/quantameridian/operational-data-quality-engine/badge)](https://scorecard.dev/viewer/?uri=github.com/quantameridian/operational-data-quality-engine)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-## Project purpose
+A Python quality gate for operational records. It tells a reporting owner whether a tracker is reliable enough to use in a management pack, which records need correction, and why the decision was made.
 
-This repository is a public portfolio example of a Python data quality engine. It checks an operational tracker before the data is used in a management report, assurance review, or performance discussion.
+The worked case is a monthly service review on 19 June 2026. The input contains open actions, risks, reviews, and closure evidence. Some records are deliberately incomplete or inconsistent. Every name, email address, and record is synthetic.
 
-The engine reads a realistic sample tracker, applies clear quality rules, and writes out the records that need attention. The point is simple: before anyone trusts a report, someone should know which source records are incomplete, stale, duplicated, or missing evidence.
+## See the result
 
-## Portfolio focus
+The supplied blocked scenario produces:
 
-This repo is designed to show how I approach data quality work in a business setting. It is not a demo that stops at checking for empty fields. It shows how I turn a reporting risk into tested rules, useful exception output, a clear contract, and a run path that another reviewer can repeat.
+| Measure | Result |
+| --- | ---: |
+| Records checked | 30 |
+| Exceptions | 39 |
+| High severity exceptions | 16 |
+| Readiness score | 12 / 100 |
+| Decision | Not ready for reporting |
 
-A hiring or technical reviewer should be able to follow the whole route: source data comes in, business rules are applied, failed checks are written as useful exceptions, and the final summary says whether the tracker is ready for reporting. The code is small enough to inspect, but it still shows the habits that matter in commercial work: clear rule design, repeatable output, tests, a data contract, CI, dependency audit, CodeQL, and safe synthetic data.
+Open the [HTML quality report](outputs/quality_report.html), [quality summary](outputs/quality_summary.md), or [exception preview](docs/exception-register-preview.md). The [run manifest](outputs/run_manifest.json) records the engine version, rule policy version, report date, input hash, configuration hash, result, and output hashes.
 
-What this does not claim: this is not a live enterprise data quality platform. There is no scheduler, database adapter, alerting layer, or production access model yet. The value of the repo is the engineering shape and the judgement behind it.
+Three tested datasets show the decision range:
 
-## Reviewer quick path
+| Scenario | Score | Decision |
+| --- | ---: | --- |
+| [Clean](data/scenarios/tracker_clean.csv) | 100 | Ready for routine reporting |
+| [Review](data/scenarios/tracker_review.csv) | 82 | Usable with review |
+| [Blocked](data/raw/operational_tracker_sample.csv) | 12 | Not ready for reporting |
 
-If you only have a few minutes, start here:
+## Run it
 
-1. Read [docs/reviewer-guide.md](docs/reviewer-guide.md).
-2. Read the business problem and rule table below.
-3. Inspect the contract in `contracts/operational-tracker-contract.json`.
-4. Inspect the generated outputs in `outputs/exception_register.csv`, `outputs/quality_summary.md`, and `docs/exception-register-preview.md`.
-5. Read [docs/operational-runbook.md](docs/operational-runbook.md) for how a reporting team would use the results.
-6. Run `make qa` to lint, test, regenerate the sample outputs, and refresh the markdown preview.
-
-The current GitHub Actions workflow runs linting, tests, and the sample engine execution on every push to `main`.
-
-## Business problem
-
-Many reporting processes still rely on manual trackers. Those trackers may hold open actions, risk items, assurance findings, service issues, or review records. They can work well enough for daily handling, but still be weak evidence for a report because ownership, review dates, evidence, statuses, and closure details are not maintained with the same care.
-
-Typical issues include:
-
-- records without a named owner;
-- duplicate record identifiers;
-- invalid or inconsistent status values;
-- overdue reviews;
-- stale open records;
-- high risk items without a clear action owner;
-- closed items without closure evidence.
-
-If these issues are found late, the report can look tidy while the source data is still shaky. This project treats data quality as a check that happens before reporting, not after the meeting has already started.
-
-## What this project shows
-
-- Python work with a small package structure.
-- Data quality rules written in business language.
-- Exception management and severity assignment.
-- Readiness checks before dashboard use.
-- Assurance and control thinking around operational records.
-- Reproducible outputs from synthetic sample data.
-- Testable business logic for rules that matter in reporting.
-
-## Skills demonstrated
-
-| Skill | Where to inspect |
-| --- | --- |
-| Python package structure | `src/quality_engine` modules and CLI entry point |
-| Data quality rule design | `src/quality_engine/rules.py` and [docs/data-quality-rules.md](docs/data-quality-rules.md) |
-| Data contract discipline | `contracts/operational-tracker-contract.json` and `tests/test_contract.py` |
-| Tested business logic | `tests/` coverage for schema, rules, scoring, reporting, and CLI behavior |
-| Reporting output design | `outputs/exception_register.csv`, `outputs/quality_summary.md`, and [docs/exception-register-preview.md](docs/exception-register-preview.md) |
-| Operational response model | [docs/operational-runbook.md](docs/operational-runbook.md) |
-| Public repo security practice | [docs/security-posture.md](docs/security-posture.md), CI, CodeQL, Scorecard, and dependency audit |
-
-## Architecture
-
-Implemented flow:
-
-```mermaid
-flowchart LR
-    A["Synthetic operational tracker"] --> B["Input validation"]
-    B --> C["Schema and reference checks"]
-    C --> D["Business quality rules"]
-    D --> E["Severity and issue scoring"]
-    E --> F["Exception register"]
-    E --> G["Quality summary"]
-    E --> H["Processed reporting dataset"]
-```
-
-The current implementation uses CSV input, small Python modules from the standard library, rule functions that are easy to test, and reproducible outputs written to `outputs/`.
-
-Package shape:
-
-- `ingest.py`: load and prepare input files.
-- `schema.py`: define expected fields and reference values.
-- `rules.py`: apply data quality checks.
-- `scoring.py`: assign severity and readiness scores.
-- `reporting.py`: create output tables and summary views.
-- `cli.py`: provide a simple local run command.
-
-## Sample data
-
-The repo now includes a synthetic operational tracker at:
-
-`data/raw/operational_tracker_sample.csv`
-
-The sample data is synthetic. It shows the kinds of quality issues that often appear in manual trackers, without using data from any client, employer, or real organisation.
-
-Current fields:
-
-| Field | Purpose |
-| --- | --- |
-| `record_id` | Unique identifier for the tracker row |
-| `service_area` | Broad service area responsible for or affected by the record |
-| `reporting_unit` | Reporting grouping for management review |
-| `owner_name` | Owner recorded against the tracker row |
-| `owner_email` | Generic sample email address using `example.com` |
-| `review_cycle` | Expected review frequency |
-| `status` | Current lifecycle state |
-| `risk_rating` | Reporting risk or priority |
-| `evidence_link` | Reference to review or supporting evidence |
-| `last_reviewed_date` | Date of most recent review |
-| `next_review_due` | Date the next review is due |
-| `action_owner` | Person or role responsible for next action |
-| `action_due_date` | Due date for the next action |
-| `issue_category` | Generic issue grouping |
-| `closure_evidence` | Evidence reference supporting closure |
-| `notes` | Short sample note |
-
-See [docs/data-dictionary.md](docs/data-dictionary.md) for field definitions, approved values, and deliberate quality scenarios.
-
-## Data quality rules
-
-The implemented rules cover ownership, status, duplicate records, evidence, review timing, stale records, and overdue actions. Additional planned rules are documented in [docs/data-quality-rules.md](docs/data-quality-rules.md).
-
-| Rule ID | Rule name | Severity | Summary |
-| --- | --- | --- | --- |
-| DQ001 | Missing owner details | High | Records should have owner name and owner email for follow up |
-| DQ002 | Invalid status | High | Status must match the approved status list |
-| DQ003 | Missing action owner | High | Unresolved records should have an accountable action owner |
-| DQ004 | Duplicate record | High | `record_id` should be unique |
-| DQ005 | Overdue review | Medium | Unresolved records should be reviewed before the review due date passes |
-| DQ006 | Stale record | Medium | Unresolved records should not go more than two expected cycles without review |
-| DQ007 | Invalid review cycle | Medium | Next review due date should fall after the last reviewed date |
-| DQ009 | Closed item missing closure evidence | High | Closed records should have closure date and supporting evidence |
-| DQ010 | Overdue action | High | Unresolved records should not have a missed action due date without review or escalation |
-
-## How to run locally
-
-A reviewer can install the project, run checks, and regenerate outputs with `make`.
-Use Python 3.11 or newer; the CI security checks run on Python 3.11.
+Use Python 3.11 or newer.
 
 ```bash
 make install
 make qa
+make audit
+make benchmark
 ```
 
-`make run` reads:
+`make qa` runs Ruff, more than 40 tests with a 90 per cent coverage gate, the sample quality run, and the exception preview. The run also writes a local DuckDB database. That database is ignored by Git because it is a generated binary.
 
-`data/raw/operational_tracker_sample.csv`
-
-and writes:
-
-- `outputs/exception_register.csv`
-- `outputs/quality_summary.md`
-- `docs/exception-register-preview.md`
-
-The same output generation can be run directly with the CLI:
+The command line interface accepts CSV or DuckDB input:
 
 ```bash
-python -m quality_engine.cli \
+quality-engine \
   --input data/raw/operational_tracker_sample.csv \
   --output-dir outputs \
-  --report-date 2026-06-19
+  --report-date 2026-06-19 \
+  --rules-config config/default-rules.yml \
+  --run-id monthly-service-review \
+  --write-duckdb
 ```
 
-After installation, the console script is also available:
+Use `--log-format json` for machine readable events. Use `--fail-below-score 70` to return exit code `2` when the dataset does not meet a pipeline threshold. Invalid input or configuration returns exit code `1`.
 
-```bash
-quality-engine --input data/raw/operational_tracker_sample.csv --output-dir outputs
+## Decision flow
+
+```mermaid
+flowchart LR
+    A["CSV or DuckDB source"] --> B["Contract validation"]
+    C["Versioned rule policy"] --> D["Rule execution"]
+    E["Explicit report date"] --> D
+    B --> D
+    D --> F["Readiness score"]
+    D --> G["Exception register"]
+    F --> H["Markdown and HTML report"]
+    F --> I["Run manifest with hashes"]
+    D --> J["DuckDB review tables"]
 ```
 
-## Outputs
+The engine flags source records. It does not silently repair them. The reporting owner can trace every exception back to a rule, field, record, severity, and recommended action.
 
-Current generated output:
+## Rules
 
-- `outputs/exception_register.csv`: one row per failed rule, including record ID, rule ID, severity, issue description, and recommended action.
-- `outputs/quality_summary.md`: a markdown summary with a simple readiness score and the inputs used to calculate it.
-- `docs/exception-register-preview.md`: a generated markdown preview that puts high severity issues first.
+Rules and severities live in [config/default-rules.yml](config/default-rules.yml). The JSON [data contract](contracts/operational-tracker-contract.json) is checked against the Python schema and output contract in the test suite.
 
-Potential later output:
+| Rule | Failure found |
+| --- | --- |
+| DQ001 | Owner name or email is missing |
+| DQ002 | Status is outside the approved values |
+| DQ003 | An unresolved item has no action owner |
+| DQ004 | A record identifier appears more than once |
+| DQ005 | An unresolved review is overdue |
+| DQ006 | A record has missed the configured number of review cycles |
+| DQ007 | The next review date is not after the last review |
+| DQ008 | Review evidence is missing |
+| DQ009 | A completed item has no closure evidence |
+| DQ010 | An unresolved action is overdue |
+| DQ011 | Risk rating is outside the approved values |
+| DQ012 | Review cycle is outside the approved values |
+| DQ013 | A nonblank date is not a valid ISO calendar date |
 
-- `outputs/quality_summary.html`: a management summary of issue counts, severity profile, and readiness status.
+## Engineering evidence
 
-The current outputs are generated from `data/raw/operational_tracker_sample.csv` using the implemented rules. They are not written by hand.
+| Capability | Evidence in this repository |
+| --- | --- |
+| Python design | Separate modules for configuration, context, ingestion, rules, scoring, reporting, and storage |
+| Data contracts | Versioned JSON contract, approved values, schema tests, and clear failures for missing fields |
+| Configurable controls | Versioned YAML policy with rule switches, severity overrides, staleness, and readiness thresholds |
+| Integration | Equivalent CSV and DuckDB input paths plus a DuckDB run output with source, exception, summary, and lineage tables |
+| Reproducibility | Explicit report date, stable run identifier, SHA256 lineage, deterministic text outputs, and generated file hashes |
+| Test design | Unit, integration, scenario, contract, database, failure path, and command line tests with 96 per cent current coverage |
+| Scale evidence | A deterministic 100,000 row benchmark and a 10,000 row CI smoke run |
+| Delivery controls | Read only workflow permissions, pinned actions, dependency audit, CodeQL, Scorecard, Dependabot, and synthetic data boundaries |
 
-## Scoring model
+The [reviewer guide](docs/reviewer-guide.md) gives a ten minute route through the evidence. [Engineering decisions](docs/engineering-decisions.md) records tradeoffs. [Industry alignment](docs/industry-alignment.md) maps the implementation to current public engineering guidance without claiming certification.
 
-The readiness score starts at 100 and applies capped penalties for:
+## Boundaries
 
-- exception rate relative to record count;
-- severity mix in the validation issues;
-- high risk unresolved records with current exceptions or no action owner;
-- missing evidence indicators;
-- overdue review indicators.
+This is a local batch engine, not a hosted service. It has no scheduler, identity layer, alert transport, or live source connector. A production deployment would need ownership, access control, encrypted storage, secrets management, monitoring, retention, recovery, and a rule approval process suited to the organisation.
 
-The score is intentionally simple. It is a readiness signal, not a statistical model and not proof that the operational facts are correct.
-
-## Tests and quality checks
-
-Current checks:
-
-- `make test`: runs pytest coverage for schema validation, rules, reporting, scoring, and CLI output generation.
-- `make lint`: runs Ruff against the repository.
-- `make audit`: runs a Python dependency vulnerability audit.
-- `make run`: regenerates the exception register and quality summary from the synthetic sample data.
-- `make preview`: regenerates the markdown exception preview from the CSV output.
-- `make qa`: runs linting, tests, sample output generation, and preview generation in one command.
-
-Security posture and public data boundaries are documented in [docs/security-posture.md](docs/security-posture.md).
-
-## Where this fits
-
-In a real organisation, a similar engine could run before a weekly or monthly report is sent out. It would not replace judgement. It would give analysts, report owners, and managers a repeatable way to see whether the source tracker is ready to use.
-
-For portfolio review, this repo is strongest as evidence of Python data quality engineering, test design, exception output, and practical reporting control thinking.
-
-The pattern is relevant to:
-
-- operational assurance trackers;
-- service reporting datasets;
-- risk and issue logs;
-- action registers;
-- data quality gates before dashboard refresh;
-- reporting handover and control routines.
-
-## Limitations
-
-- This is a portfolio project using synthetic data.
-- It does not represent delivery for any named organisation.
-- The first implementation will use batch file processing rather than system integration.
-- Rule thresholds will be illustrative and should be reviewed before use in a real setting.
-- The engine will identify likely reporting issues; it will not decide operational action by itself.
-
-## Next implementation layers
-
-1. Add explicit row rules for missing review evidence if useful.
-2. Consider adding an HTML summary output if useful for reviewer presentation.
-3. Add coverage reporting if the project expands beyond the current small rule engine.
-4. Add a lightweight release checklist once the repo has more than one public version.
+The score is an explainable gate, not proof that the source facts are true. A record can pass every implemented rule and still be wrong. See [limitations](docs/limitations.md) and the [security posture](docs/security-posture.md).

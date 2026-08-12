@@ -26,3 +26,12 @@ jobs:
         run: make test PYTHON=python
       - name: Run sample engine
         run: make run PYTHON=python
+      - name: Run scale smoke test
+        run: python scripts/benchmark_engine.py --rows 10000 --report-date 2026-06-19
+      - name: Upload generated review evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: quality-run-evidence
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 14
